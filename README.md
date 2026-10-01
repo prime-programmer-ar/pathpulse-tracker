@@ -1,5 +1,9 @@
 # PathPulse — Website Behaviour Tracker
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+> 🚀 **Live demo:** _[Add your Render URL here after deployment]_
+
 A modern, self-hosted website behaviour analytics tool. It tracks how visitors interact with a site — clicks, cursor movement, scrolling, attention, frustration — and turns those signals into **live dashboards, heatmaps, scroll maps and full session replays**.
 
 This project is an upgraded, full-stack evolution of the single-file [website-behaviour-tracker](https://github.com/ahmedramzan-ai/website-behaviour-tracker) concept: same idea, dramatically deeper tracking, server-side persistence and a real analytics product UI.
@@ -133,6 +137,57 @@ bun run build && bun run start
 | Install fails on Node < 18 | Upgrade Node (`nvm install 20 && nvm use 20`) |
 | Charts flicker after schema changes | Clear `db/custom.db` (delete the file, re-run `npx prisma db push`) or press **Clear all** in the dashboard |
 | Windows PowerShell blocked scripts | Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, or use `npx` commands directly |
+
+---
+
+## ☁️ Deploy to Render (free tier, live public URL)
+
+PathPulse needs a Node.js server (Next.js + SQLite/Prisma), so it cannot run on purely static hosts like GitHub Pages. **Render** provides a free tier that supports persistent disks for SQLite.
+
+### 1 — Push to GitHub
+
+```bash
+# Inside the project folder
+git init                        # if not already a git repo
+git add .
+git commit -m "feat: initial PathPulse release"
+
+# Create a repo on github.com, then:
+git remote add origin https://github.com/<your-username>/<your-repo>.git
+git branch -M main
+git push -u origin main
+```
+
+### 2 — Deploy on Render
+
+1. Go to [render.com](https://render.com) and sign in (GitHub login is easiest).
+2. Click **New → Web Service** and connect your GitHub repo.
+3. Render will auto-detect the `render.yaml` blueprint. Accept the defaults:
+
+| Setting | Value |
+| --- | --- |
+| **Build command** | `npm install && npx prisma db push && npm run build` |
+| **Start command** | `node .next/standalone/server.js` |
+| **Node version** | 20 (set via Environment → `NODE_VERSION=20`) |
+| **Disk** | Mount at `/opt/render/project/src/db`, 1 GB |
+
+4. Add these **Environment Variables** in the Render dashboard:
+
+| Key | Value |
+| --- | --- |
+| `NODE_ENV` | `production` |
+| `DATABASE_URL` | `file:/opt/render/project/src/db/custom.db` |
+| `NODE_VERSION` | `20` |
+
+5. Click **Deploy**. First build takes ~3 minutes. When it goes green, your public URL (e.g. `https://pathpulse.onrender.com`) is live.
+
+6. **Update this README** — paste your live URL in the badge at the top:
+   ```md
+   > 🚀 **Live demo:** https://pathpulse.onrender.com
+   ```
+
+> **Note:** The Render free plan spins down after 15 minutes of inactivity. The first request after a cold start takes ~30 seconds to wake up. Upgrade to the $7/month Starter plan to keep it always-on.
+
 
 ### 60-second tour
 

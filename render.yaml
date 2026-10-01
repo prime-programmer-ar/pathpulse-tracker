@@ -1,0 +1,22 @@
+# Render.com deployment config for PathPulse
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: pathpulse
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npx prisma db push && npm run build
+    startCommand: node .next/standalone/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./db/custom.db
+      - key: PORT
+        value: "3000"
+    disk:
+      name: pathpulse-db
+      mountPath: /opt/render/project/src/db
+      sizeGB: 1

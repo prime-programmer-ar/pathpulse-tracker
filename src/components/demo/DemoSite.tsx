@@ -11,7 +11,6 @@ import {
   Luggage,
   Mail,
   MapPin,
-  Mountain,
   Phone,
   ShieldCheck,
   Sparkles,
@@ -79,6 +78,7 @@ const TRIPS = [
     price: 1890,
     badge: "Bestseller",
     art: "from-[#0f766e] via-[#0ea5e9] to-[#312e81]",
+    photo: "/aurora-iceland.jpg",
   },
   {
     id: "tromso",
@@ -89,6 +89,7 @@ const TRIPS = [
     price: 2240,
     badge: "Limited",
     art: "from-[#6d28d9] via-[#a855f7] to-[#ec4899]",
+    photo: "/aurora-norway.jpg",
   },
   {
     id: "abisko",
@@ -99,6 +100,7 @@ const TRIPS = [
     price: 1590,
     badge: "New",
     art: "from-[#065f46] via-[#10b981] to-[#22d3ee]",
+    photo: "/aurora-sweden.jpg",
   },
 ];
 
@@ -386,10 +388,13 @@ export function DemoSite({ mode = "live", className }: DemoSiteProps) {
                 )}
               >
                 <div className="relative h-80 overflow-hidden rounded-[1.8rem] bg-gradient-to-b from-[#0b1e3a] via-[#123a52] to-[#0d2430]">
-                  <div className="pp-stars absolute inset-0 opacity-50" />
-                  <div className="absolute -top-10 left-10 h-64 w-24 rotate-[18deg] rounded-full bg-gradient-to-b from-teal-300/70 via-teal-500/30 to-transparent blur-xl" />
-                  <div className="absolute top-6 right-16 h-56 w-16 -rotate-12 rounded-full bg-gradient-to-b from-violet-400/60 via-fuchsia-500/25 to-transparent blur-lg" />
-                  <div className="absolute bottom-24 left-24 h-40 w-10 rotate-6 rounded-full bg-gradient-to-b from-cyan-200/60 to-transparent blur-md" />
+                  {/* Real aurora photo in hero panel */}
+                  <img
+                    src="/aurora-iceland.jpg"
+                    alt="Aurora borealis over glacier lagoon"
+                    className="absolute inset-0 h-full w-full object-cover opacity-70"
+                  />
+                  <div className="pp-stars absolute inset-0 opacity-20" />
                   <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#050a14] to-transparent" />
                   <div className="absolute -bottom-6 -left-[10%] h-20 w-[45%] rounded-t-full bg-[#050a14]" />
                   <div className="absolute -bottom-6 -right-[8%] h-24 w-[55%] rounded-t-full bg-[#04080f]" />
@@ -507,17 +512,18 @@ export function DemoSite({ mode = "live", className }: DemoSiteProps) {
                 >
                   <div
                     className={cn(
-                      "relative grid h-44 place-items-center bg-gradient-to-br",
+                      "relative h-52 overflow-hidden bg-gradient-to-br",
                       trip.art
                     )}
                   >
-                    <div className="pp-stars absolute inset-0 opacity-40" />
-                    <div className="absolute -top-8 left-6 h-32 w-9 rotate-[15deg] rounded-full bg-gradient-to-b from-white/50 to-transparent blur-md" />
-                    <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-black/40 to-transparent" />
-                    <Mountain
-                      className="relative h-14 w-14 text-white/80 drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
-                      aria-hidden
+                    {/* Real photo */}
+                    <img
+                      src={trip.photo}
+                      alt={trip.name}
+                      className="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105"
                     />
+                    <div className="pp-stars absolute inset-0 opacity-20" />
+                    <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/70 to-transparent" />
                     <span
                       className={cn(
                         "absolute left-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white",
