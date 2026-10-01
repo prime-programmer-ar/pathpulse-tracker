@@ -3,8 +3,9 @@
   "version": "0.2.1",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "next build",
+    "build": "next build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public",
     "start": "node .next/standalone/server.js",
     "lint": "eslint .",
     "db:push": "prisma db push --accept-data-loss",

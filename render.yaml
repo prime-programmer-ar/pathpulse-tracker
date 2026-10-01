@@ -1,5 +1,10 @@
 # Render.com deployment config for PathPulse
 # Docs: https://render.com/docs/blueprint-spec
+#
+# Build order (automatic):
+#   1. npm install  →  triggers postinstall → prisma generate
+#   2. npx prisma db push  →  creates the SQLite schema on the disk mount
+#   3. npm run build  →  next build + copies static/ and public/ into standalone/
 
 services:
   - type: web
@@ -7,14 +12,7 @@ services:
     runtime: node
     region: oregon
     plan: free
-    # Next.js standalone build: must copy static assets and public folder manually
-    buildCommand: >
-      npm install &&
-      npx prisma generate &&
-      npx prisma db push &&
-      npm run build &&
-      cp -r .next/static .next/standalone/.next/static &&
-      cp -r public .next/standalone/public
+    buildCommand: npm install && npx prisma db push && npm run build
     startCommand: node .next/standalone/server.js
     envVars:
       - key: NODE_ENV
