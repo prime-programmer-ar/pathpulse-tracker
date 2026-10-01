@@ -21,6 +21,8 @@ services:
         value: file:/opt/render/project/src/db/custom.db
       - key: PORT
         value: "3000"
+      - key: HOSTNAME
+        value: "0.0.0.0"
     disk:
       name: pathpulse-db
       mountPath: /opt/render/project/src/db
