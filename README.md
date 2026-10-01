@@ -166,7 +166,7 @@ git push -u origin main
 
 | Setting | Value |
 | --- | --- |
-| **Build command** | `npm install && npx prisma db push && npm run build` |
+| **Build command** | `npm install && npx prisma generate && npx prisma db push && npm run build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public` |
 | **Start command** | `node .next/standalone/server.js` |
 | **Node version** | 20 (set via Environment → `NODE_VERSION=20`) |
 | **Disk** | Mount at `/opt/render/project/src/db`, 1 GB |
