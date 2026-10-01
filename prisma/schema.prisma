@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// A single visitor browsing session on the tracked demo site.
+model TrackedSession {
+  id             String   @id @default(cuid())
+  visitorId      String
+  startedAt      DateTime @default(now())
+  lastSeenAt     DateTime @default(now())
+  endedAt        DateTime?
+  durationMs     Int      @default(0)
+  engagedMs      Int      @default(0)
+  idleMs         Int      @default(0)
+  clickCount     Int      @default(0)
+  rageClicks     Int      @default(0)
+  deadClicks     Int      @default(0)
+  moveCount      Int      @default(0)
+  scrollCount    Int      @default(0)
+  keyCount       Int      @default(0)
+  formSubmits    Int      @default(0)
+  maxScrollDepth Int      @default(0)
+  mouseDistance  Int      @default(0)
+  pageHeight     Int      @default(0)
+  viewportW      Int      @default(0)
+  viewportH      Int      @default(0)
+  screenWidth    Int      @default(0)
+  screenHeight   Int      @default(0)
+  deviceType     String   @default("desktop")
+  language       String   @default("")
+  platform       String   @default("")
+  referrer       String   @default("")
+  userAgent      String   @default("")
+  returning      Boolean  @default(false)
+  sectionTimes   String   @default("{}") // JSON: section id -> dwell ms
+  isSeed         Boolean  @default(false)
+  events         TrackedEvent[]
+
+  @@index([lastSeenAt])
+  @@index([visitorId])
+}
+
+// One captured interaction event inside a session.
+model TrackedEvent {
+  id            String         @id @default(cuid())
+  sessionId     String
+  session       TrackedSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  t             Int            @default(0) // ms since session start
+  type          String
+  x             Float?
+  y             Float?
+  vx            Float?
+  vy            Float?
+  sy            Float? // window scrollY at capture time
+  sw            Int? // demo page width at capture time
+  sh            Int? // demo page height at capture time
+  targetTag     String?
+  targetId      String?
+  targetText    String?
+  targetClasses String?
+  dead          Boolean        @default(false)
+  rage          Boolean        @default(false)
+  data          String? // JSON extras: depth, visible, section, formField, rageCount ...
+  createdAt     DateTime       @default(now())
+
+  @@index([sessionId, t])
+  @@index([type])
+  @@index([createdAt])
+}
