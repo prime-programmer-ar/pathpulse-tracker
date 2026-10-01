@@ -2,7 +2,7 @@
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-> 🚀 **Live demo:** _[Add your Render URL here after deployment]_
+> 🚀 **Live demo:** https://pathpulse-tracker.onrender.com
 
 A modern, self-hosted website behaviour analytics tool. It tracks how visitors interact with a site — clicks, cursor movement, scrolling, attention, frustration — and turns those signals into **live dashboards, heatmaps, scroll maps and full session replays**.
 
