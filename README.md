@@ -6,8 +6,6 @@
 
 A modern, self-hosted website behaviour analytics tool. It tracks how visitors interact with a site — clicks, cursor movement, scrolling, attention, frustration — and turns those signals into **live dashboards, heatmaps, scroll maps and full session replays**.
 
-
-
 ---
 
 ## ✨ Features
