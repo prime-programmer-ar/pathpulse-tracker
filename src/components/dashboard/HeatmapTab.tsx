@@ -432,7 +432,7 @@ export function HeatmapTab({
             <CardContent className="space-y-3 text-sm">
               {mode === "heatmap" && (
                 <>
-                  <div className="h-3 w-full rounded-full bg-gradient-to-r from-[#143ce6] via-[#3ca06e] via-60% to-[#eb3c32]" />
+                  <div className="h-3 w-full rounded-full bg-gradient-to-r from-[#2064ff] via-[#4fdd8e] to-[#f03c37]" />
                   <p className="text-xs text-muted-foreground">
                     Cold (blue) = few clicks, hot (red) = dense click clusters.
                     Rage clicks are weighted heavier.

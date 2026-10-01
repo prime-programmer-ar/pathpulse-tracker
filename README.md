@@ -30,7 +30,7 @@ Privacy-first by design: anonymous visitor ids, **no cookies, no PII, no keystro
 
 - **Live monitor** — active sessions, real-time event stream (3s polling), rage-click alerts, per-visitor "watch" buttons
 - **Overview** — KPI cards (engagement, scroll depth, clicks/session, rage, dead clicks, form submits), activity timeline, scroll-depth histogram, device split, section dwell chart, most-clicked elements, frustration signals
-- **Heatmaps** — true canvas **density heatmaps** (alpha accumulation + colour LUT), click dot map, and a **scroll reach map** showing how far visitors get, rendered over a scaled clone of the real page, with desktop/tablet/mobile filters and opacity control
+- **Heatmaps** — true canvas **density heatmaps** (alpha accumulation + colour LUT, additive glow rendering that pops on the dark demo page), click dot map, and a **scroll reach map** showing how far visitors get, rendered over a scaled clone of the real page, with desktop/tablet/mobile filters and opacity control
 - **Sessions** — filterable table (device, live-only, search) with quality badges and one-click delete
 - **Session replay** — watch any recorded visit as a video: animated cursor, scroll replay, click/rage pings, play/pause, 1–8× speed, scrubable timeline with click markers, synced event stream
 - **Sample data** — one click seeds 12 realistic simulated sessions (buyers, browsers, rage-clickers, form fillers…) so every view is instantly explorable; coordinates are calibrated against the real page layout
@@ -41,7 +41,8 @@ Privacy-first by design: anonymous visitor ids, **no cookies, no PII, no keystro
 ## 🧱 Tech stack
 
 - **Next.js 16** (App Router, TypeScript)
-- **Tailwind CSS 4 + shadcn/ui** (teal/amber design system, dark mode via `next-themes`)
+- **Tailwind CSS 4 + shadcn/ui** (teal/amber dashboard design system, dark mode via `next-themes`)
+- **Glassmorphism demo storefront** (backdrop-blur glass panels over an animated aurora gradient + starfield, see `src/app/globals.css`)
 - **Prisma ORM + SQLite** (zero-config persistence in `db/custom.db`)
 - **TanStack Query** (live polling data flow)
 - **Recharts** (analytics charts)
@@ -53,26 +54,89 @@ Privacy-first by design: anonymous visitor ids, **no cookies, no PII, no keystro
 
 ### Prerequisites
 
-- [Node.js 18+](https://nodejs.org) or [Bun](https://bun.sh)
+- **Node.js 18+** (Node 20 LTS recommended) — install from [nodejs.org](https://nodejs.org) or with `nvm install 20`
+  **or** **Bun 1.0+** — install from [bun.sh](https://bun.sh)
+- Git (to clone the repo) — or download the project as a ZIP
+- That's it: **no external database, no API keys, no `.env` required**. Persistence uses a bundled SQLite file.
 
-### Install & run
+Works the same on **macOS, Windows and Linux**.
+
+### 1) Get the code
 
 ```bash
-# 1. install dependencies
-bun install        # or npm install
-
-# 2. create the database (db/custom.db)
-bun run db:push    # or npx prisma db push
-
-# 3. start the dev server
-bun run dev        # or npm run dev
+git clone <your-repo-url> pathpulse
+cd pathpulse
+# (or unzip the downloaded archive and cd into it)
 ```
 
-Open <http://localhost:3000> in your browser.
+### 2) Install dependencies
+
+```bash
+npm install        # npm
+# or
+bun install        # bun — noticeably faster
+# or
+pnpm install       # pnpm and yarn also work
+```
+
+### 3) Create the database
+
+```bash
+npx prisma db push     # npm / pnpm users
+bunx prisma db push    # bun users
+```
+
+This creates `db/custom.db` and the `TrackedSession` + `TrackedEvent` tables. The Prisma datasource is preconfigured in `prisma/schema.prisma`, so no environment variables are needed.
+
+<details>
+<summary>Optional: custom database location or MySQL/Postgres</summary>
+
+- **Move the SQLite file**: set `DATABASE_URL="file:./wherever/you/want.db"` in a `.env` file at the project root, then re-run `npx prisma db push`.
+- **Switch engine**: replace the `datasource db { provider = "sqlite" }` block in `prisma/schema.prisma` with `postgresql` or `mysql` and a matching `DATABASE_URL`, then run `npx prisma db push` again. The rest of the app is engine-agnostic.
+
+</details>
+
+### 4) Start the dev server
+
+```bash
+npm run dev
+# or
+bun run dev
+```
+
+Open <http://localhost:3000> — the demo site is tracked from your very first click.
+
+### Production build (optional)
+
+```bash
+npm run build && npm run start
+# or
+bun run build && bun run start
+```
+
+### Run it anywhere — checklist
+
+| Step | Command (npm) | Command (bun) |
+| --- | --- | --- |
+| Install | `npm install` | `bun install` |
+| Database | `npx prisma db push` | `bunx prisma db push` |
+| Develop | `npm run dev` | `bun run dev` |
+| Build | `npm run build` | `bun run build` |
+| Serve | `npm run start` | `bun run start` |
+
+### Troubleshooting
+
+| Symptom | Fix |
+| --- | --- |
+| `Port 3000 is already in use` | Stop the other process, or run `npm run dev -- -p 3001` and open <http://localhost:3001> |
+| `PrismaClient did not initialize` / schema errors | Re-run `npx prisma db push` and restart the dev server so the client regenerates |
+| Install fails on Node < 18 | Upgrade Node (`nvm install 20 && nvm use 20`) |
+| Charts flicker after schema changes | Clear `db/custom.db` (delete the file, re-run `npx prisma db push`) or press **Clear all** in the dashboard |
+| Windows PowerShell blocked scripts | Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, or use `npx` commands directly |
 
 ### 60-second tour
 
-1. You land on the **Aurora Beans demo storefront** — this page is fully tracked. Click things, scroll, fill the contact form.
+1. You land on the **Lumina Voyages demo site** — a glassmorphism aurora-travel storefront that is fully tracked. Click things, scroll, fill the contact form.
 2. Notice the **REC badge** and live stats (engaged time, clicks, depth) in the top bar, plus amber dots marking your clicks.
 3. Switch to **Dashboard** → the **Live** tab shows your own session in real time.
 4. Press **Load sample data** to add 12 simulated visitors, then explore:
@@ -81,12 +145,6 @@ Open <http://localhost:3000> in your browser.
    - **Sessions** → **Replay** to watch a recorded visit,
    - the **Watch** buttons on the Live tab to jump straight into a replay.
 5. Toggle **dark mode** from the top bar any time.
-
-### Production build
-
-```bash
-bun run build && bun run start
-```
 
 ---
 
@@ -97,7 +155,7 @@ src/
 ├── app/
 │   ├── page.tsx                  # App shell: site/dashboard views + tracker wiring
 │   ├── layout.tsx                # Theme provider, metadata, toaster
-│   ├── globals.css               # Teal design tokens, scrollbars, animations
+│   ├── globals.css               # Teal design tokens, scrollbars, glass/starfield/aurora utilities
 │   └── api/
 │       ├── track/route.ts        # POST — event ingest (session upsert)
 │       ├── analytics/route.ts    # GET  — aggregates for dashboard (KPIs, charts, heatmap points)
@@ -110,7 +168,7 @@ src/
 │   ├── heatmap.ts                # Canvas density heatmap + reach colour engine
 │   └── format.ts                 # Formatting helpers
 └── components/
-    ├── demo/DemoSite.tsx         # Aurora Beans storefront (live + static modes)
+    ├── demo/DemoSite.tsx         # Lumina Voyages glass storefront (live + static modes)
     └── dashboard/
         ├── Dashboard.tsx         # Tab shell, queries, seed/clear
         ├── LiveTab.tsx           # Real-time monitor

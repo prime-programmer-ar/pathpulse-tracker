@@ -9,14 +9,14 @@ export interface HeatPoint {
 }
 
 const LUT_STOPS: Array<[number, [number, number, number]]> = [
-  [0.0, [0, 0, 0]],
-  [0.2, [20, 60, 220]],
-  [0.35, [30, 160, 230]],
-  [0.5, [60, 200, 120]],
-  [0.62, [180, 220, 60]],
-  [0.75, [250, 210, 50]],
-  [0.88, [245, 130, 40]],
-  [1.0, [235, 60, 50]],
+  [0.0, [6, 18, 90]],
+  [0.22, [32, 100, 255]],
+  [0.38, [40, 180, 255]],
+  [0.52, [70, 220, 130]],
+  [0.64, [190, 235, 70]],
+  [0.76, [252, 215, 60]],
+  [0.88, [248, 140, 45]],
+  [1.0, [240, 60, 55]],
 ];
 
 function buildLut(): Uint8ClampedArray {
@@ -102,10 +102,13 @@ export function drawHeatmap(
   }
   octx.putImageData(img, 0, 0);
 
-  // 3. Blit onto the target canvas.
+  // 3. Blit onto the target canvas (additive blending so heat glows over
+  // both light and dark page renders).
   ctx.globalAlpha = opacity;
+  ctx.globalCompositeOperation = "lighter";
   ctx.imageSmoothingEnabled = true;
   ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
+  ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha = 1;
 }
 

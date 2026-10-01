@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 // Generates realistic sample sessions so the dashboard is immediately useful.
-// Coordinates approximate the Aurora Beans demo layout at two widths.
+// Coordinates approximate the Lumina Voyages demo layout at three widths.
 
 type SeedEvent = {
   t: number;
@@ -43,99 +43,99 @@ const jitter = (v: number, amount: number) => v + rand(-amount, amount);
 const LAYOUT = {
   desktop: {
     sw: 1512,
-    sh: 4310,
+    sh: 4551,
     sections: {
       hero: [77, 915],
       features: [915, 1423],
-      shop: [1423, 2026],
-      pricing: [2026, 2628],
-      reviews: [2628, 3066],
-      faq: [3066, 3552],
-      contact: [3552, 4072],
+      shop: [1423, 2071],
+      pricing: [2071, 2697],
+      reviews: [2697, 3135],
+      faq: [3135, 3623],
+      contact: [3623, 4143],
     } as Record<string, [number, number]>,
-    heroCta: { x: 297, y: 655 },
+    heroCta: { x: 277, y: 655 },
     addCart: [
-      { x: 364, y: 1919, label: "Add to cart" },
-      { x: 756, y: 1919, label: "Add to cart" },
-      { x: 1148, y: 1919, label: "Add to cart" },
+      { x: 364, y: 1941, label: "Reserve spot" },
+      { x: 756, y: 1941, label: "Reserve spot" },
+      { x: 1148, y: 1964, label: "Reserve spot" },
     ],
     plans: [
-      { x: 364, y: 2486, label: "Choose Explorer" },
-      { x: 756, y: 2500, label: "Choose Regular" },
-      { x: 1148, y: 2516, label: "Choose Obsessed" },
+      { x: 364, y: 2555, label: "Choose Explorer" },
+      { x: 756, y: 2569, label: "Choose Voyager" },
+      { x: 1148, y: 2585, label: "Choose Luminary" },
     ],
-    nav: { x: 780, y: 45 },
-    faqRow: { x: 756, y: 3231 },
+    nav: { x: 768, y: 38 },
+    faqRow: { x: 756, y: 3301 },
     form: [
-      { x: 1054, y: 3685, field: "name" },
-      { x: 1054, y: 3763, field: "email" },
-      { x: 1054, y: 3855, field: "message" },
+      { x: 1054, y: 3756, field: "name" },
+      { x: 1054, y: 3834, field: "email" },
+      { x: 1054, y: 3926, field: "message" },
     ],
-    formSubmit: { x: 1054, y: 3925 },
+    formSubmit: { x: 1054, y: 3996 },
   },
   mobile: {
     sw: 375,
-    sh: 7605,
+    sh: 8359,
     sections: {
-      hero: [77, 884],
-      features: [884, 2008],
-      shop: [2008, 3444],
-      pricing: [3444, 4797],
-      reviews: [4797, 5713],
-      faq: [5713, 6195],
-      contact: [6195, 7093],
+      hero: [77, 900],
+      features: [900, 2132],
+      shop: [2132, 3720],
+      pricing: [3720, 5096],
+      reviews: [5096, 6090],
+      faq: [6090, 6598],
+      contact: [6598, 7524],
     } as Record<string, [number, number]>,
-    heroCta: { x: 188, y: 580 },
+    heroCta: { x: 121, y: 580 },
     addCart: [
-      { x: 188, y: 2564, label: "Add to cart" },
-      { x: 188, y: 2951, label: "Add to cart" },
-      { x: 188, y: 3338, label: "Add to cart" },
+      { x: 188, y: 2749, label: "Reserve spot" },
+      { x: 188, y: 3181, label: "Reserve spot" },
+      { x: 188, y: 3613, label: "Reserve spot" },
     ],
     plans: [
-      { x: 188, y: 3925, label: "Choose Explorer" },
-      { x: 188, y: 4305, label: "Choose Regular" },
-      { x: 188, y: 4685, label: "Choose Obsessed" },
+      { x: 188, y: 4224, label: "Choose Explorer" },
+      { x: 188, y: 4604, label: "Choose Voyager" },
+      { x: 188, y: 4984, label: "Choose Luminary" },
     ],
-    nav: { x: 188, y: 45 },
-    faqRow: { x: 188, y: 5850 },
+    nav: { x: 188, y: 38 },
+    faqRow: { x: 188, y: 6264 },
     form: [
-      { x: 188, y: 6600, field: "name" },
-      { x: 188, y: 6680, field: "email" },
-      { x: 188, y: 6780, field: "message" },
+      { x: 188, y: 7119, field: "name" },
+      { x: 188, y: 7197, field: "email" },
+      { x: 188, y: 7290, field: "message" },
     ],
-    formSubmit: { x: 188, y: 6930 },
+    formSubmit: { x: 188, y: 7361 },
   },
   tablet: {
     sw: 834,
-    sh: 4887,
+    sh: 5210,
     sections: {
-      hero: [121, 858],
-      features: [858, 1472],
-      shop: [1472, 2141],
-      pricing: [2141, 2763],
-      reviews: [2763, 3299],
-      faq: [3299, 3785],
-      contact: [3785, 4645],
+      hero: [121, 808],
+      features: [808, 1422],
+      shop: [1422, 2165],
+      pricing: [2165, 2831],
+      reviews: [2831, 3393],
+      faq: [3393, 3881],
+      contact: [3881, 4767],
     } as Record<string, [number, number]>,
-    heroCta: { x: 157, y: 598 },
+    heroCta: { x: 137, y: 548 },
     addCart: [
-      { x: 158, y: 2006, label: "Add to cart" },
-      { x: 417, y: 2034, label: "Add to cart" },
-      { x: 676, y: 1990, label: "Add to cart" },
+      { x: 158, y: 2058, label: "Reserve spot" },
+      { x: 417, y: 2014, label: "Reserve spot" },
+      { x: 676, y: 2014, label: "Reserve spot" },
     ],
     plans: [
-      { x: 158, y: 2601, label: "Choose Explorer" },
-      { x: 417, y: 2635, label: "Choose Regular" },
-      { x: 676, y: 2651, label: "Choose Obsessed" },
+      { x: 158, y: 2649, label: "Choose Explorer" },
+      { x: 417, y: 2703, label: "Choose Voyager" },
+      { x: 676, y: 2679, label: "Choose Luminary" },
     ],
-    nav: { x: 417, y: 45 },
-    faqRow: { x: 417, y: 3450 },
+    nav: { x: 413, y: 60 },
+    faqRow: { x: 417, y: 3559 },
     form: [
-      { x: 630, y: 4000, field: "name" },
-      { x: 630, y: 4080, field: "email" },
-      { x: 630, y: 4180, field: "message" },
+      { x: 417, y: 4380, field: "name" },
+      { x: 417, y: 4458, field: "email" },
+      { x: 417, y: 4550, field: "message" },
     ],
-    formSubmit: { x: 630, y: 4330 },
+    formSubmit: { x: 417, y: 4620 },
   },
 };
 
@@ -323,7 +323,7 @@ function generateSession(index: number) {
     cursor = { ...layout.heroCta };
     if (Math.random() < 0.5) {
       t = clickAt(events, t, cursor.x, cursor.y, layout, sy, {
-        text: "Start your subscription",
+        text: "Reserve your seat",
       });
     } else {
       t = clickAt(events, t, jitter(400, 120), 400, layout, sy, {
@@ -337,7 +337,7 @@ function generateSession(index: number) {
     t = moveTo(events, t, cursor, layout.heroCta, layout, sy);
     cursor = { ...layout.heroCta };
     t = clickAt(events, t, cursor.x, cursor.y, layout, sy, {
-      text: "Start your subscription",
+      text: "Reserve your seat",
     });
     t += rand(800, 1600);
     const targetY = layout.sections.pricing[0] + 300;
@@ -408,7 +408,7 @@ function generateSession(index: number) {
     t = moveTo(events, t, { x: layout.sw / 2, y: sy + 400 }, layout.faqRow, layout, sy);
     t = clickAt(events, t, layout.faqRow.x, layout.faqRow.y, layout, sy, {
       tag: "button",
-      text: "When does my first box ship?",
+      text: "When does the next expedition leave?",
     });
     t += rand(2000, 5000);
     // fill the form

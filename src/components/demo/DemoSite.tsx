@@ -1,6 +1,6 @@
 "use client";
 
-// Aurora Beans — a realistic demo storefront used as tracking fodder.
+// Lumina Voyages — a glassmorphism aurora-travel demo site used as tracking fodder.
 // mode="live"  -> the interactive page users browse (tracked).
 // mode="static" -> non-interactive render used by the heatmap & replay views.
 
@@ -8,15 +8,16 @@ import * as React from "react";
 import {
   ArrowRight,
   Check,
-  Coffee,
-  Leaf,
+  Luggage,
   Mail,
   MapPin,
+  Mountain,
   Phone,
-  ShoppingCart,
-  Star,
-  Truck,
   ShieldCheck,
+  Sparkles,
+  Star,
+  Telescope,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,54 +37,68 @@ interface DemoSiteProps {
   className?: string;
 }
 
+// Glass design language (glassmorphism: backdrop blur 10-20px, translucent
+// surfaces 10-30% white, hairline light borders, layered depth).
+const GLASS =
+  "border border-white/15 bg-gradient-to-b from-white/[0.13] to-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_16px_48px_-12px_rgba(2,6,23,0.6)]";
+const GLASS_SOFT = "border border-white/10 bg-white/[0.07] backdrop-blur-lg";
+const GLASS_CHIP =
+  "border border-white/20 bg-white/10 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)]";
+const CTA_PRIMARY =
+  "border-0 bg-gradient-to-r from-teal-400 to-violet-500 text-white font-bold shadow-lg shadow-violet-950/50 hover:from-teal-300 hover:to-violet-400";
+const CTA_GLASS =
+  "border-white/20 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 hover:text-white";
+const FIELD_GLASS =
+  "border-white/15 bg-white/5 text-white placeholder:text-white/35 backdrop-blur-md focus-visible:border-teal-300/50 focus-visible:ring-teal-300/25";
+
 const FEATURES = [
   {
-    icon: Leaf,
-    title: "Single origin, always fresh",
-    text: "Every batch is sourced from one farm and roasted within 48 hours of shipping, so the origin character survives all the way to your cup.",
+    icon: Telescope,
+    title: "Dark-sky camps, not parking lots",
+    text: "We hold exclusive permits on certified dark-sky land inside the auroral oval, hours from the nearest town glow, so the sky starts at your horizon.",
   },
   {
-    icon: Truck,
-    title: "Free 2-day delivery",
-    text: "Orders leave our roastery every Monday and Thursday. Free shipping on every subscription box, always, with no minimum order.",
+    icon: Zap,
+    title: "Departures timed to solar peaks",
+    text: "Windows follow the 27-day solar rotation and live KP-index forecasts. When the sun goes quiet, we shift your departure free of charge.",
   },
   {
     icon: ShieldCheck,
-    title: "Roast-proof guarantee",
-    text: "If a bag does not taste spectacular, tell us within 30 days and we replace it or refund you. No forms, no questions.",
+    title: "No-lights guarantee",
+    text: "If the aurora stays away on your trip, re-book any departure within 12 months at no cost. Across five seasons, 94% of guests saw the lights.",
   },
 ];
 
-const PRODUCTS = [
+const TRIPS = [
   {
-    id: "sunrise",
-    name: "Sunrise Blend",
-    origin: "Huila, Colombia",
-    notes: "Milk chocolate, red apple, caramel",
-    price: 18,
-    roast: "Medium",
+    id: "iceland",
+    name: "Glacier Lagoon Night",
+    origin: "Vatnajökull, Iceland",
+    nights: "5 nights",
+    notes: "Ice caves by day, shore-side aurora camps by night. Heated glass-roof pods included.",
+    price: 1890,
     badge: "Bestseller",
-    tone: "amber",
+    art: "from-[#0f766e] via-[#0ea5e9] to-[#312e81]",
   },
   {
-    id: "midnight",
-    name: "Midnight Reserve",
-    origin: "Yirgacheffe, Ethiopia",
-    notes: "Blueberry, dark cocoa, jasmine",
-    price: 24,
-    roast: "Dark",
+    id: "tromso",
+    name: "Fjord Lights Yacht",
+    origin: "Tromsø, Norway",
+    nights: "4 nights",
+    notes: "A 12-guest yacht that chases clear sky up the fjord each night while you stay warm below deck.",
+    price: 2240,
     badge: "Limited",
-    tone: "stone",
+    art: "from-[#6d28d9] via-[#a855f7] to-[#ec4899]",
   },
   {
-    id: "meadow",
-    name: "Meadow Light",
-    origin: "Nyeri, Kenya",
-    notes: "Blackcurrant, honey, citrus zest",
-    price: 21,
-    roast: "Light",
+    id: "abisko",
+    name: "Sky Station Weekend",
+    origin: "Abisko, Sweden",
+    nights: "3 nights",
+    notes: "Chairlift straight into the rain-shadow microclimate NASA ranks #1 for clear aurora nights.",
+    price: 1590,
     badge: "New",
-    tone: "emerald",
+    art: "from-[#065f46] via-[#10b981] to-[#22d3ee]",
   },
 ];
 
@@ -93,35 +108,35 @@ const PLANS = [
     name: "Explorer",
     price: 19,
     per: "/month",
-    bags: "1 bag · 250g",
-    perks: ["Choose your roast", "Skip or pause anytime", "Free shipping"],
+    bags: "1 trip credit · 12 months",
+    perks: ["One expedition per year", "Swap dates freely", "Trip planner access"],
     highlight: false,
   },
   {
-    id: "regular",
-    name: "Regular",
+    id: "voyager",
+    name: "Voyager",
     price: 34,
     per: "/month",
-    bags: "2 bags · 500g",
+    bags: "2 trip credits · 12 months",
     perks: [
-      "Mix any origins",
-      "Early access to limited roasts",
-      "Free shipping",
-      "Tasting notes card",
+      "Two expeditions per year",
+      "Solar-peak priority booking",
+      "Private gear room",
+      "Photography coach",
     ],
     highlight: true,
   },
   {
-    id: "obsessed",
-    name: "Obsessed",
+    id: "luminary",
+    name: "Luminary",
     price: 59,
     per: "/month",
-    bags: "4 bags · 1kg",
+    bags: "3 trip credits · 12 months",
     perks: [
-      "Everything in Regular",
-      "Rare micro-lot every quarter",
-      "Brew gear discounts",
-      "Priority support",
+      "Everything in Voyager",
+      "Expedition leader calls",
+      "First pick of new trips",
+      "Bring a friend free",
     ],
     highlight: false,
   },
@@ -131,43 +146,43 @@ const REVIEWS = [
   {
     name: "Maya K.",
     quote:
-      "The Midnight Reserve is the best coffee I have had at home, full stop. Tastes like a specialty cafe without leaving the kitchen.",
+      "The yacht moved three times in one night hunting clear sky. At 1am the whole fjord turned green and nobody spoke for a solid minute. Worth every krone.",
     stars: 5,
   },
   {
     name: "Daniel R.",
     quote:
-      "Cancelled twice while travelling and restarted with one click. Support answered in five minutes. This is how subscriptions should work.",
+      "They rebooked us onto a KP 6 storm night for free when our first window looked cloudy. These guides read space weather like surfers read waves.",
     stars: 5,
   },
   {
     name: "Priya S.",
     quote:
-      "The tasting notes are actually accurate, which is rare. My morning ritual has quietly upgraded itself.",
+      "Minus 24, and I was somehow never cold — the kit list they send is perfect. I got the photograph of my life on night two.",
     stars: 4,
   },
 ];
 
 const FAQS = [
   {
-    q: "When does my first box ship?",
-    a: "We roast on Mondays and Thursdays. Orders placed before 8am ship the same roast day and arrive within 2 days. Your first box includes a welcome card with brew guides for each origin.",
+    q: "When does the next expedition leave?",
+    a: "Windows run from late August to early April, with peak departures between October and February. Every member sees the live departure calendar before booking, and new windows open on the first Monday of each month based on the latest solar forecast.",
   },
   {
-    q: "Can I pause or skip a delivery?",
-    a: "Yes. Skip, pause, or cancel from your account in two clicks. Changes made up to 24 hours before a roast day apply to that box automatically.",
+    q: "What if the forecast turns bad?",
+    a: "Guides watch cloud and KP data up to 48 hours out. If your window collapses, we move you to the next clear-sky departure at no cost, or bank your credit for the rest of the season. You never lose money to weather.",
   },
   {
-    q: "How fresh is the coffee, really?",
-    a: "Every bag is roasted to order, sealed with a one-way valve, and stamped with the roast date. Nothing sits in a warehouse. Typical age at your door: 2 to 4 days.",
+    q: "How cold is it, really?",
+    a: "Most nights sit between minus 10 and minus 25 Celsius, but you are never far from a heated pod or fire. We ship a personal kit list (boots, layers, batteries) six weeks before departure, and nobody who followed it has ever been cold.",
   },
   {
-    q: "Do you offer decaf?",
-    a: "We offer a Swiss Water processed decaf from Colombia as a swap option in any plan at no extra cost. Select it during checkout or from your account.",
+    q: "Do I need photography gear?",
+    a: "No. Every expedition carries two shared tripods and an a7S-style low-light body, and the photography coach will set it up for you. If you have your own camera, bring it — we run a 30-minute settings clinic on night one.",
   },
   {
-    q: "What if I do not like a bag?",
-    a: "Tell us within 30 days and we replace the bag or refund the box. You keep the coffee. The only thing we ask is what went wrong, so the roasters can adjust.",
+    q: "What fitness level is required?",
+    a: "If you can walk 3 km over gentle snow, you are ready. Transport, sleds and heated shelters do the hard work. The only mandatory effort is staying awake — the strongest displays often land after midnight.",
   },
 ];
 
@@ -178,7 +193,7 @@ function scrollToSection(id: string) {
 
 export function DemoSite({ mode = "live", className }: DemoSiteProps) {
   const { toast } = useToast();
-  const [cart, setCart] = React.useState(0);
+  const [bookings, setBookings] = React.useState(0);
   const staticMode = mode === "static";
 
   const notify = (title: string, description: string) => {
@@ -186,10 +201,13 @@ export function DemoSite({ mode = "live", className }: DemoSiteProps) {
     toast({ title, description, duration: 2600 });
   };
 
-  const addToCart = (name: string) => {
+  const reserveSpot = (name: string) => {
     if (staticMode) return;
-    setCart((c) => c + 1);
-    notify("Added to cart", `${name} is in your cart (${cart + 1} items).`);
+    setBookings((c) => c + 1);
+    notify(
+      "Spot reserved",
+      `${name} is held for 48 hours (${bookings + 1} in your trip sheet).`
+    );
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -200,7 +218,7 @@ export function DemoSite({ mode = "live", className }: DemoSiteProps) {
     notify(
       "Message sent",
       `Thanks ${
-        (data.get("name") as string) || "friend"
+        (data.get("name") as string) || "traveller"
       }, we will reply within one business day.`
     );
     form.reset();
@@ -211,541 +229,649 @@ export function DemoSite({ mode = "live", className }: DemoSiteProps) {
       id="tracked-site"
       data-track-root=""
       className={cn(
-        "relative bg-[#faf6f0] font-sans text-[#2b1d12] selection:bg-[#f5d9a8]",
+        "relative overflow-hidden bg-[#050914] font-sans text-white selection:bg-teal-400/30",
         staticMode ? "pointer-events-none select-none" : "",
         className
       )}
     >
-      {/* Site header */}
-      <header className="border-b border-[#e5d9c9] bg-[#faf6f0]/95 px-6 py-4 md:px-10">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[#b4531f] to-[#7c3413] text-white shadow-sm">
-              <Coffee className="h-5 w-5" aria-hidden />
-            </span>
-            <div className="leading-tight">
-              <p className="text-lg font-extrabold tracking-tight">
-                Aurora Beans
-              </p>
-              <p className="text-xs text-[#8a7561]">Specialty coffee club</p>
-            </div>
-          </div>
-          <nav
-            className="hidden items-center gap-1 md:flex"
-            aria-label="Demo site navigation"
-          >
-            {[
-              ["shop", "Shop"],
-              ["pricing", "Subscriptions"],
-              ["reviews", "Reviews"],
-              ["faq", "FAQ"],
-              ["contact", "Contact"],
-            ].map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                data-nav={id}
-                onClick={() => scrollToSection(id)}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-[#5d4a37] transition hover:bg-[#f0e5d4] hover:text-[#2b1d12]"
-              >
-                {label}
-              </button>
-            ))}
-          </nav>
-          <div className="flex items-center gap-3">
-            <span
-              data-interactive
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#e0d0bb] bg-white"
-              aria-label="Cart"
-            >
-              <ShoppingCart className="h-4.5 w-4.5 text-[#6b543d]" />
-              {cart > 0 && (
-                <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#b4531f] px-1 text-[11px] font-bold text-white">
-                  {cart}
-                </span>
-              )}
-            </span>
-            <Button
-              data-nav="pricing"
-              onClick={() => scrollToSection("pricing")}
-              className="hidden bg-[#b4531f] font-semibold text-white shadow-sm hover:bg-[#9a4218] sm:inline-flex"
-            >
-              Start subscription
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Aurora background layer (glassmorphism backdrop) */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050914] via-[#0a1128] to-[#060b18]" />
+        <div className="pp-stars absolute inset-0 opacity-35" />
+        <div className="pp-aurora-blob absolute -top-32 right-[6%] h-[480px] w-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(32,178,170,0.30),transparent)] blur-2xl" />
+        <div className="absolute top-[13%] -left-[10%] h-[560px] w-[560px] rounded-full bg-[radial-gradient(closest-side,rgba(124,58,237,0.26),transparent)] blur-2xl" />
+        <div className="pp-aurora-blob absolute top-[40%] -right-[12%] h-[560px] w-[640px] rounded-full bg-[radial-gradient(closest-side,rgba(236,72,153,0.20),transparent)] blur-3xl" />
+        <div className="absolute top-[64%] -left-[8%] h-[520px] w-[560px] rounded-full bg-[radial-gradient(closest-side,rgba(0,128,255,0.22),transparent)] blur-2xl" />
+        <div className="absolute bottom-[-4%] right-[16%] h-[420px] w-[600px] rounded-full bg-[radial-gradient(closest-side,rgba(139,92,246,0.18),transparent)] blur-2xl" />
+      </div>
 
-      {/* Hero */}
-      <section
-        id="demo-hero"
-        data-section="hero"
-        className="relative overflow-hidden px-6 py-20 md:px-10 md:py-28"
-      >
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#f3d9a7]/60 blur-3xl" />
-        <div className="pointer-events-none absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-[#e8b477]/40 blur-3xl" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#e3c58f] bg-[#fdf1da] px-3.5 py-1.5 text-xs font-semibold text-[#8a5a1d]">
-              <Star className="h-3.5 w-3.5 fill-[#e8a33d] text-[#e8a33d]" />
-              4.9 average from 2,300+ members
-            </span>
-            <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-5xl xl:text-6xl">
-              Ridiculously fresh coffee, roasted two days before it reaches
-              your door.
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#6b543d]">
-              Single-origin lots from farmers we actually visit, roasted to
-              order in small batches, and shipped on a schedule you control.
-              Pause anytime. Taste everything.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+      <div className="relative z-10">
+        {/* Site header (glass) */}
+        <header className="border-b border-white/10 bg-white/[0.04] px-6 py-4 backdrop-blur-xl md:px-10">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-teal-400 to-violet-500 text-white shadow-lg shadow-violet-950/40">
+                <Sparkles className="h-5 w-5" aria-hidden />
+              </span>
+              <div className="leading-tight">
+                <p className="text-lg font-extrabold tracking-tight">
+                  Lumina Voyages
+                </p>
+                <p className="text-xs text-white/55">
+                  Northern lights expeditions
+                </p>
+              </div>
+            </div>
+            <nav
+              className="hidden items-center gap-1 md:flex"
+              aria-label="Demo site navigation"
+            >
+              {[
+                ["shop", "Trips"],
+                ["pricing", "Membership"],
+                ["reviews", "Reviews"],
+                ["faq", "FAQ"],
+                ["contact", "Contact"],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  data-nav={id}
+                  onClick={() => scrollToSection(id)}
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-white/65 transition hover:bg-white/10 hover:text-white"
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+            <div className="flex items-center gap-3">
+              <span
+                data-interactive
+                className={cn(
+                  "relative flex h-10 w-10 items-center justify-center rounded-full",
+                  GLASS_CHIP
+                )}
+                aria-label="Trip sheet"
+              >
+                <Luggage className="h-4.5 w-4.5 text-white/80" />
+                {bookings > 0 && (
+                  <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-gradient-to-r from-teal-400 to-violet-500 px-1 text-[11px] font-bold text-white">
+                    {bookings}
+                  </span>
+                )}
+              </span>
               <Button
                 data-nav="pricing"
                 onClick={() => scrollToSection("pricing")}
-                className="h-12 bg-[#b4531f] px-7 text-base font-bold text-white shadow-lg shadow-[#b4531f]/25 hover:bg-[#9a4218]"
+                className={cn("hidden font-semibold sm:inline-flex", CTA_PRIMARY)}
               >
-                Start your subscription
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-              <Button
-                data-nav="shop"
-                variant="outline"
-                onClick={() => scrollToSection("shop")}
-                className="h-12 border-[#d8c3a8] bg-white px-7 text-base font-semibold text-[#6b4a2a] hover:bg-[#faf0df]"
-              >
-                Browse this week's roasts
+                Join the club
               </Button>
             </div>
-            <dl className="mt-10 grid max-w-lg grid-cols-3 gap-4">
-              {[
-                ["48h", "Roast to ship"],
-                ["12", "Origin partners"],
-                ["97%", "Stay past box 3"],
-              ].map(([v, l]) => (
-                <div
-                  key={l}
-                  className="rounded-2xl border border-[#eadbc4] bg-white/70 p-4"
-                >
-                  <dt className="text-2xl font-extrabold text-[#9a4218]">
-                    {v}
-                  </dt>
-                  <dd className="mt-0.5 text-xs font-medium text-[#8a7561]">
-                    {l}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
-          <div className="relative hidden lg:block" aria-hidden>
-            <div className="mx-auto grid h-[420px] w-[420px] rotate-3 place-items-center rounded-[2.5rem] bg-gradient-to-br from-[#c9702e] via-[#9a4218] to-[#5c2a0e] shadow-2xl shadow-[#7c3413]/30">
-              <div className="grid h-[340px] w-[340px] -rotate-2 place-items-center rounded-[2rem] border-8 border-[#f5e6cd] bg-[#fdf8ee]">
-                <div className="text-center">
-                  <Coffee className="mx-auto h-16 w-16 text-[#b4531f]" />
-                  <p className="mt-3 text-2xl font-extrabold tracking-tight">
-                    AURORA BEANS
-                  </p>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.3em] text-[#a08663]">
-                    Fresh roast club
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section
-        id="demo-features"
-        data-section="features"
-        className="border-y border-[#eadbc4] bg-[#f5eee1] px-6 py-16 md:px-10"
-      >
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
-            Why members stay
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-[#6b543d]">
-            We obsess over the boring details so your morning does not have to
-            involve compromise.
-          </p>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {FEATURES.map((f) => (
-              <article
-                key={f.title}
-                className="rounded-2xl border border-[#eadbc4] bg-white p-7 shadow-sm"
-              >
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-[#fdf1da] text-[#b4531f]">
-                  <f.icon className="h-6 w-6" aria-hidden />
-                </span>
-                <h3 className="mt-4 text-lg font-bold">{f.title}</h3>
-                <p className="mt-2 leading-relaxed text-[#6b543d]">{f.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Shop */}
-      <section
-        id="demo-shop"
-        data-section="shop"
-        className="px-6 py-16 md:px-10"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-wrap items-end justify-between gap-3">
+        </header>
+        {/* Hero */}
+        <section
+          id="demo-hero"
+          data-section="hero"
+          className="relative px-6 py-20 md:px-10 md:py-28"
+        >
+          <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
             <div>
-              <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-                This week&apos;s roasts
-              </h2>
-              <p className="mt-2 text-[#6b543d]">
-                Three origins, roasted Thursday. Limited stock per lot.
-              </p>
-            </div>
-            <span className="rounded-full bg-[#f0e5d4] px-4 py-1.5 text-xs font-semibold text-[#6b543d]">
-              Updated every roast day
-            </span>
-          </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {PRODUCTS.map((p) => (
-              <article
-                key={p.id}
-                className="group overflow-hidden rounded-2xl border border-[#eadbc4] bg-white shadow-sm transition hover:shadow-md"
+              <span
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold text-white/80",
+                  GLASS_CHIP
+                )}
               >
-                <div
-                  className={cn(
-                    "relative grid h-44 place-items-center",
-                    p.tone === "amber" &&
-                      "bg-gradient-to-br from-[#f6d9a0] to-[#e9b268]",
-                    p.tone === "stone" &&
-                      "bg-gradient-to-br from-[#ded3c2] to-[#b5a48d]",
-                    p.tone === "emerald" &&
-                      "bg-gradient-to-br from-[#cfe6c3] to-[#93c07f]"
-                  )}
+                <Star className="h-3.5 w-3.5 fill-amber-300 text-amber-300" />
+                4.9 average from 1,900+ travellers
+              </span>
+              <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-5xl xl:text-6xl">
+                The northern lights, from the last
+                <span className="bg-gradient-to-r from-teal-300 via-cyan-200 to-violet-300 bg-clip-text text-transparent">
+                  {" "}
+                  dark places on Earth
+                </span>
+                .
+              </h1>
+              <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/65">
+                Eight-guest expeditions inside the auroral oval, timed to solar
+                storms and led by guides who have logged 270 aurora nights.
+                Cold-weather kit, cameras and midnight coffee included.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Button
+                  data-nav="pricing"
+                  onClick={() => scrollToSection("pricing")}
+                  className={cn("h-12 px-7 text-base", CTA_PRIMARY)}
                 >
-                  <Coffee
-                    className="h-14 w-14 text-[#5c4029]/70 transition-transform group-hover:scale-110"
-                    aria-hidden
-                  />
-                  <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#6b4a2a]">
-                    {p.badge}
+                  Reserve your seat
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+                <Button
+                  data-nav="shop"
+                  variant="outline"
+                  onClick={() => scrollToSection("shop")}
+                  className={cn("h-12 px-7 text-base font-semibold", CTA_GLASS)}
+                >
+                  See this season&rsquo;s trips
+                </Button>
+              </div>
+              <dl className="mt-10 grid max-w-lg grid-cols-3 gap-4">
+                {[
+                  ["8", "Guests per trip"],
+                  ["270", "Aurora nights logged"],
+                  ["94%", "Saw the lights"],
+                ].map(([v, l]) => (
+                  <div key={l} className={cn("rounded-2xl p-4", GLASS)}>
+                    <dt className="text-2xl font-extrabold text-teal-300">
+                      {v}
+                    </dt>
+                    <dd className="mt-0.5 text-xs font-medium text-white/55">
+                      {l}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            {/* Glass expedition console visual */}
+            <div className="relative hidden lg:block" aria-hidden>
+              <div className="absolute right-4 top-2 h-40 w-52 rotate-6 rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-lg" />
+              <div
+                className={cn(
+                  "relative mx-auto w-[440px] rounded-[2.2rem] p-4",
+                  GLASS
+                )}
+              >
+                <div className="relative h-80 overflow-hidden rounded-[1.8rem] bg-gradient-to-b from-[#0b1e3a] via-[#123a52] to-[#0d2430]">
+                  <div className="pp-stars absolute inset-0 opacity-50" />
+                  <div className="absolute -top-10 left-10 h-64 w-24 rotate-[18deg] rounded-full bg-gradient-to-b from-teal-300/70 via-teal-500/30 to-transparent blur-xl" />
+                  <div className="absolute top-6 right-16 h-56 w-16 -rotate-12 rounded-full bg-gradient-to-b from-violet-400/60 via-fuchsia-500/25 to-transparent blur-lg" />
+                  <div className="absolute bottom-24 left-24 h-40 w-10 rotate-6 rounded-full bg-gradient-to-b from-cyan-200/60 to-transparent blur-md" />
+                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#050a14] to-transparent" />
+                  <div className="absolute -bottom-6 -left-[10%] h-20 w-[45%] rounded-t-full bg-[#050a14]" />
+                  <div className="absolute -bottom-6 -right-[8%] h-24 w-[55%] rounded-t-full bg-[#04080f]" />
+                  <span
+                    className={cn(
+                      "absolute left-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold text-white/85",
+                      GLASS_CHIP
+                    )}
+                  >
+                    KP 6.7 · storm
                   </span>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-baseline justify-between">
-                    <h3 className="text-lg font-bold">{p.name}</h3>
-                    <p className="text-lg font-extrabold text-[#9a4218]">
-                      ${p.price}
+                  <span
+                    className={cn(
+                      "absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold text-white/85",
+                      GLASS_CHIP
+                    )}
+                  >
+                    −18°C
+                  </span>
+                  <div
+                    className={cn(
+                      "absolute bottom-5 left-1/2 w-max -translate-x-1/2 rounded-2xl px-4 py-2 text-center",
+                      GLASS_CHIP
+                    )}
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/55">
+                      Next departure
+                    </p>
+                    <p className="text-sm font-extrabold text-white">
+                      Glacier Lagoon · 14 Nov
                     </p>
                   </div>
-                  <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-[#a08663]">
-                    {p.origin} · {p.roast} roast
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-[#6b543d]">
-                    {p.notes}
-                  </p>
-                  <Button
-                    onClick={() => addToCart(p.name)}
-                    className="mt-5 w-full bg-[#2b1d12] font-semibold text-white hover:bg-[#3d2a1a]"
-                  >
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to cart
-                  </Button>
                 </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section
-        id="demo-pricing"
-        data-section="pricing"
-        className="border-y border-[#eadbc4] bg-[#f5eee1] px-6 py-16 md:px-10"
-      >
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
-            Pick your rhythm
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-[#6b543d]">
-            Every plan ships free. Change, pause, or cancel whenever you like.
-          </p>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {PLANS.map((plan) => (
-              <article
-                key={plan.id}
-                data-plan={plan.id}
-                className={cn(
-                  "relative rounded-2xl border p-7",
-                  plan.highlight
-                    ? "border-[#b4531f] bg-white shadow-xl shadow-[#b4531f]/10 md:-mt-4 md:mb-4"
-                    : "border-[#eadbc4] bg-white shadow-sm"
-                )}
-              >
-                {plan.highlight && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#b4531f] px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
-                    Most popular
-                  </span>
-                )}
-                <h3 className="text-lg font-bold">{plan.name}</h3>
-                <p className="mt-1 text-sm text-[#8a7561]">{plan.bags}</p>
-                <p className="mt-4">
-                  <span className="text-4xl font-extrabold tracking-tight">
-                    ${plan.price}
-                  </span>
-                  <span className="text-sm font-medium text-[#8a7561]">
-                    {plan.per}
-                  </span>
-                </p>
-                <ul className="mt-5 space-y-2.5">
-                  {plan.perks.map((perk) => (
-                    <li
-                      key={perk}
-                      className="flex items-start gap-2 text-sm text-[#5d4a37]"
-                    >
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#7c9a54]" />
-                      {perk}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  onClick={() =>
-                    notify(
-                      `${plan.name} selected`,
-                      "Checkout is not part of this demo, but your click was recorded."
-                    )
-                  }
-                  className={cn(
-                    "mt-6 w-full font-semibold",
-                    plan.highlight
-                      ? "bg-[#b4531f] text-white hover:bg-[#9a4218]"
-                      : "border-[#d8c3a8] bg-white text-[#6b4a2a] hover:bg-[#faf0df]"
-                  )}
-                  variant={plan.highlight ? "default" : "outline"}
-                >
-                  Choose {plan.name}
-                </Button>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Reviews */}
-      <section
-        id="demo-reviews"
-        data-section="reviews"
-        className="px-6 py-16 md:px-10"
-      >
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
-            Members, unfiltered
-          </h2>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {REVIEWS.map((r) => (
-              <figure
-                key={r.name}
-                className="rounded-2xl border border-[#eadbc4] bg-white p-7 shadow-sm"
-              >
-                <div className="flex gap-1" aria-label={`${r.stars} of 5 stars`}>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
+                <div className="mt-4 grid grid-cols-3 gap-3">
+                  {["Cloud 4%", "Wind 6 km/h", "Moon 12%"].map((m) => (
+                    <div
+                      key={m}
                       className={cn(
-                        "h-4 w-4",
-                        i < r.stars
-                          ? "fill-[#e8a33d] text-[#e8a33d]"
-                          : "text-[#e0d0bb]"
+                        "rounded-xl px-2 py-2.5 text-center text-xs font-semibold text-white/75",
+                        GLASS_SOFT
                       )}
-                    />
+                    >
+                      {m}
+                    </div>
                   ))}
                 </div>
-                <blockquote className="mt-4 leading-relaxed text-[#5d4a37]">
-                  &ldquo;{r.quote}&rdquo;
-                </blockquote>
-                <figcaption className="mt-4 text-sm font-bold">
-                  {r.name}
-                  <span className="ml-2 font-medium text-[#a08663]">
-                    Member since 2023
-                  </span>
-                </figcaption>
-              </figure>
-            ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section
-        id="demo-faq"
-        data-section="faq"
-        className="border-y border-[#eadbc4] bg-[#f5eee1] px-6 py-16 md:px-10"
-      >
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
-            Questions, answered
-          </h2>
-          <Accordion type="single" collapsible className="mt-8">
-            {FAQS.map((f, i) => (
-              <AccordionItem
-                key={i}
-                value={`faq-${i}`}
-                className="border-[#eadbc4]"
-              >
-                <AccordionTrigger className="text-left text-base font-semibold text-[#2b1d12] hover:no-underline">
-                  {f.q}
-                </AccordionTrigger>
-                <AccordionContent className="leading-relaxed text-[#6b543d]">
-                  {f.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Contact */}
-      <section
-        id="demo-contact"
-        data-section="contact"
-        className="px-6 py-16 md:px-10"
-      >
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
-          <div>
-            <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-              Talk to a human
+        </section>
+        {/* Features */}
+        <section
+          id="demo-features"
+          data-section="features"
+          className="border-y border-white/[0.07] bg-white/[0.03] px-6 py-16 md:px-10"
+        >
+          <div className="mx-auto max-w-6xl">
+            <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+              Why travellers rebook
             </h2>
-            <p className="mt-3 max-w-md leading-relaxed text-[#6b543d]">
-              Roasting questions, subscription changes, wholesale, or just
-              coffee chat. We answer everything within one business day.
+            <p className="mx-auto mt-3 max-w-2xl text-center text-white/60">
+              We obsess over the boring details — permits, forecasts, kit — so
+              your only job is to look up.
             </p>
-            <ul className="mt-8 space-y-4">
-              {[
-                [MapPin, "Roastery", "14 Foundry Lane, Portland, OR"],
-                [Mail, "Email", "hello@aurorabeans.demo"],
-                [Phone, "Phone", "+1 (555) 014-9922"],
-              ].map(([Icon, label, value]) => {
-                const I = Icon as typeof MapPin;
-                return (
-                  <li key={label as string} className="flex items-center gap-4">
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#fdf1da] text-[#b4531f]">
-                      <I className="h-5 w-5" aria-hidden />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-wide text-[#a08663]">
-                        {label as string}
-                      </p>
-                      <p className="font-semibold">{value as string}</p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {FEATURES.map((f) => (
+                <article key={f.title} className={cn("rounded-3xl p-7", GLASS)}>
+                  <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-teal-400/25 to-violet-500/25 text-teal-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)]">
+                    <f.icon className="h-6 w-6" aria-hidden />
+                  </span>
+                  <h3 className="mt-4 text-lg font-bold text-white">
+                    {f.title}
+                  </h3>
+                  <p className="mt-2 leading-relaxed text-white/60">{f.text}</p>
+                </article>
+              ))}
+            </div>
           </div>
-          <form
-            id="contact-form"
-            onSubmit={onSubmit}
-            className="rounded-2xl border border-[#eadbc4] bg-white p-7 shadow-sm"
-            noValidate={false}
-          >
-            <div className="grid gap-5">
-              <div className="grid gap-2">
-                <Label htmlFor="contact-name">Your name</Label>
-                <Input
-                  id="contact-name"
-                  name="name"
-                  placeholder="Alex Rivera"
-                  autoComplete="name"
-                  required
-                />
+        </section>
+
+        {/* Trips / shop */}
+        <section
+          id="demo-shop"
+          data-section="shop"
+          className="px-6 py-16 md:px-10"
+        >
+          <div className="mx-auto max-w-6xl">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+                  This season&rsquo;s expeditions
+                </h2>
+                <p className="mt-2 text-white/60">
+                  Three windows, eight guests each. Guides confirmed for the
+                  season.
+                </p>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact-email">Email</Label>
-                <Input
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  placeholder="alex@example.com"
-                  autoComplete="email"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact-message">Message</Label>
-                <Textarea
-                  id="contact-message"
-                  name="message"
-                  placeholder="How can we help?"
-                  rows={4}
-                />
-              </div>
-              <Button
-                type="submit"
-                className="bg-[#b4531f] font-bold text-white hover:bg-[#9a4218]"
+              <span
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-xs font-semibold text-white/75",
+                  GLASS_CHIP
+                )}
               >
-                Send message
-              </Button>
-              <p className="text-xs text-[#a08663]">
-                This form is part of the demo. Submissions are simulated and
-                tracked as form events only.
+                Updated with every forecast
+              </span>
+            </div>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {TRIPS.map((trip) => (
+                <article
+                  key={trip.id}
+                  className={cn(
+                    "group overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_-16px_rgba(45,212,191,0.25)]",
+                    GLASS
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "relative grid h-44 place-items-center bg-gradient-to-br",
+                      trip.art
+                    )}
+                  >
+                    <div className="pp-stars absolute inset-0 opacity-40" />
+                    <div className="absolute -top-8 left-6 h-32 w-9 rotate-[15deg] rounded-full bg-gradient-to-b from-white/50 to-transparent blur-md" />
+                    <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-black/40 to-transparent" />
+                    <Mountain
+                      className="relative h-14 w-14 text-white/80 drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+                      aria-hidden
+                    />
+                    <span
+                      className={cn(
+                        "absolute left-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white",
+                        GLASS_CHIP
+                      )}
+                    >
+                      {trip.badge}
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="text-lg font-bold text-white">
+                        {trip.name}
+                      </h3>
+                      <p className="text-lg font-extrabold text-teal-300">
+                        ${trip.price.toLocaleString()}
+                      </p>
+                    </div>
+                    <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-white/45">
+                      {trip.origin} · {trip.nights}
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed text-white/60">
+                      {trip.notes}
+                    </p>
+                    <Button
+                      onClick={() => reserveSpot(trip.name)}
+                      className={cn("mt-5 w-full font-semibold", CTA_PRIMARY)}
+                    >
+                      <Luggage className="mr-2 h-4 w-4" />
+                      Reserve spot
+                    </Button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+        {/* Membership / pricing */}
+        <section
+          id="demo-pricing"
+          data-section="pricing"
+          className="border-y border-white/[0.07] bg-white/[0.03] px-6 py-16 md:px-10"
+        >
+          <div className="mx-auto max-w-6xl">
+            <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+              Pick your membership
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-white/60">
+              Credits never expire while your membership runs. Pause or cancel
+              from your account in two clicks.
+            </p>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {PLANS.map((plan) => (
+                <article
+                  key={plan.id}
+                  data-plan={plan.id}
+                  className={cn(
+                    "relative rounded-3xl p-7",
+                    plan.highlight
+                      ? "border border-teal-300/40 bg-gradient-to-b from-white/[0.16] to-white/[0.07] shadow-[0_0_48px_-10px_rgba(45,212,191,0.45),inset_0_1px_0_0_rgba(255,255,255,0.18)] backdrop-blur-xl md:-mt-4 md:mb-4"
+                      : GLASS
+                  )}
+                >
+                  {plan.highlight && (
+                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-teal-400 to-violet-500 px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-violet-950/50">
+                      Most popular
+                    </span>
+                  )}
+                  <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+                  <p className="mt-1 text-sm text-white/50">{plan.bags}</p>
+                  <p className="mt-4">
+                    <span className="text-4xl font-extrabold tracking-tight text-white">
+                      ${plan.price}
+                    </span>
+                    <span className="text-sm font-medium text-white/50">
+                      {plan.per}
+                    </span>
+                  </p>
+                  <ul className="mt-5 space-y-2.5">
+                    {plan.perks.map((perk) => (
+                      <li
+                        key={perk}
+                        className="flex items-start gap-2 text-sm text-white/70"
+                      >
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />
+                        {perk}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    onClick={() =>
+                      notify(
+                        `${plan.name} selected`,
+                        "Checkout is not part of this demo, but your click was recorded."
+                      )
+                    }
+                    className={cn(
+                      "mt-6 w-full font-semibold",
+                      plan.highlight ? CTA_PRIMARY : CTA_GLASS
+                    )}
+                    variant={plan.highlight ? "default" : "outline"}
+                  >
+                    Choose {plan.name}
+                  </Button>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Reviews */}
+        <section
+          id="demo-reviews"
+          data-section="reviews"
+          className="px-6 py-16 md:px-10"
+        >
+          <div className="mx-auto max-w-6xl">
+            <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+              Travellers, unfiltered
+            </h2>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {REVIEWS.map((r) => (
+                <figure key={r.name} className={cn("rounded-3xl p-7", GLASS)}>
+                  <div
+                    className="flex gap-1"
+                    aria-label={`${r.stars} of 5 stars`}
+                  >
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={cn(
+                          "h-4 w-4",
+                          i < r.stars
+                            ? "fill-amber-300 text-amber-300"
+                            : "text-white/20"
+                        )}
+                      />
+                    ))}
+                  </div>
+                  <blockquote className="mt-4 leading-relaxed text-white/75">
+                    &ldquo;{r.quote}&rdquo;
+                  </blockquote>
+                  <figcaption className="mt-4 text-sm font-bold text-white">
+                    {r.name}
+                    <span className="ml-2 font-medium text-white/45">
+                      Member since 2023
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+        {/* FAQ */}
+        <section
+          id="demo-faq"
+          data-section="faq"
+          className="border-y border-white/[0.07] bg-white/[0.03] px-6 py-16 md:px-10"
+        >
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+              Questions, answered
+            </h2>
+            <div
+              className={cn(
+                "mt-8 rounded-3xl px-6 backdrop-blur-xl",
+                GLASS_SOFT
+              )}
+            >
+              <Accordion type="single" collapsible>
+                {FAQS.map((f, i) => (
+                  <AccordionItem
+                    key={i}
+                    value={`faq-${i}`}
+                    className="border-white/10"
+                  >
+                    <AccordionTrigger className="text-left text-base font-semibold text-white hover:text-teal-200 hover:no-underline">
+                      {f.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="leading-relaxed text-white/60">
+                      {f.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section
+          id="demo-contact"
+          data-section="contact"
+          className="px-6 py-16 md:px-10"
+        >
+          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
+            <div>
+              <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+                Talk to a human
+              </h2>
+              <p className="mt-3 max-w-md leading-relaxed text-white/60">
+                Booking questions, private-group requests, press, or just
+                aurora chat. Guides answer everything within one business day
+                — usually faster around a solar storm.
+              </p>
+              <ul className="mt-8 space-y-4">
+                {[
+                  [MapPin, "Base camp", "Storgata 41, Tromsø, Norway"],
+                  [Mail, "Email", "hello@luminavoyages.demo"],
+                  [Phone, "Phone", "+47 555 018 221"],
+                ].map(([Icon, label, value]) => {
+                  const I = Icon as typeof MapPin;
+                  return (
+                    <li
+                      key={label as string}
+                      className="flex items-center gap-4"
+                    >
+                      <span
+                        className={cn(
+                          "grid h-11 w-11 place-items-center rounded-xl text-teal-300",
+                          GLASS_CHIP
+                        )}
+                      >
+                        <I className="h-5 w-5" aria-hidden />
+                      </span>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wide text-white/45">
+                          {label as string}
+                        </p>
+                        <p className="font-semibold text-white/90">
+                          {value as string}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <form
+              id="contact-form"
+              onSubmit={onSubmit}
+              className={cn("rounded-3xl p-7", GLASS)}
+              noValidate={false}
+            >
+              <div className="grid gap-5">
+                <div className="grid gap-2">
+                  <Label htmlFor="contact-name" className="text-white/80">
+                    Your name
+                  </Label>
+                  <Input
+                    id="contact-name"
+                    name="name"
+                    placeholder="Alex Rivera"
+                    autoComplete="name"
+                    required
+                    className={FIELD_GLASS}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="contact-email" className="text-white/80">
+                    Email
+                  </Label>
+                  <Input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    placeholder="alex@example.com"
+                    autoComplete="email"
+                    required
+                    className={FIELD_GLASS}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="contact-message" className="text-white/80">
+                    Message
+                  </Label>
+                  <Textarea
+                    id="contact-message"
+                    name="message"
+                    placeholder="Where do you want to see the lights?"
+                    rows={4}
+                    className={FIELD_GLASS}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className={cn("font-bold", CTA_PRIMARY)}
+                >
+                  Send message
+                </Button>
+                <p className="text-xs text-white/40">
+                  This form is part of the demo. Submissions are simulated and
+                  tracked as form events only.
+                </p>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="border-t border-white/10 bg-black/30 px-6 py-12 text-white/60 backdrop-blur-xl md:px-10">
+          <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-teal-400 to-violet-500 text-white shadow-lg shadow-violet-950/40">
+                  <Sparkles className="h-4 w-4" aria-hidden />
+                </span>
+                <p className="text-lg font-extrabold text-white">
+                  Lumina Voyages
+                </p>
+              </div>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed">
+                A fictional glassmorphism storefront built to demonstrate the
+                PathPulse behaviour tracker. Every click here is being
+                recorded.
               </p>
             </div>
-          </form>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-[#2b1d12] px-6 py-12 text-[#cdb89f] md:px-10">
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#b4531f] text-white">
-                <Coffee className="h-4 w-4" aria-hidden />
-              </span>
-              <p className="text-lg font-extrabold text-white">Aurora Beans</p>
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wide text-white">
+                Explore
+              </p>
+              <ul className="mt-3 space-y-2 text-sm">
+                {[
+                  ["shop", "Trips"],
+                  ["pricing", "Membership"],
+                  ["reviews", "Reviews"],
+                  ["faq", "FAQ"],
+                ].map(([id, label]) => (
+                  <li key={id}>
+                    <button
+                      type="button"
+                      data-nav={id}
+                      onClick={() => scrollToSection(id)}
+                      className="transition hover:text-white"
+                    >
+                      {label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed">
-              A fictional storefront built to demonstrate the PathPulse
-              behaviour tracker. Every click here is being recorded.
-            </p>
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wide text-white">
+                Fine print
+              </p>
+              <p className="mt-3 text-sm leading-relaxed">
+                No real bookings are processed. No payment data is collected.
+                Interaction events are anonymous and contain no personal
+                information.
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-white">
-              Explore
-            </p>
-            <ul className="mt-3 space-y-2 text-sm">
-              {[
-                ["shop", "Shop"],
-                ["pricing", "Subscriptions"],
-                ["reviews", "Reviews"],
-                ["faq", "FAQ"],
-              ].map(([id, label]) => (
-                <li key={id}>
-                  <button
-                    type="button"
-                    data-nav={id}
-                    onClick={() => scrollToSection(id)}
-                    className="transition hover:text-white"
-                  >
-                    {label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-white">
-              Fine print
-            </p>
-            <p className="mt-3 text-sm leading-relaxed">
-              No real orders are processed. No payment data is collected.
-              Interaction events are anonymous and contain no personal
-              information.
-            </p>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }

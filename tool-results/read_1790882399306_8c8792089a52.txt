@@ -1,0 +1,752 @@
+     1→"use client";
+     2→
+     3→// Aurora Beans — a realistic demo storefront used as tracking fodder.
+     4→// mode="live"  -> the interactive page users browse (tracked).
+     5→// mode="static" -> non-interactive render used by the heatmap & replay views.
+     6→
+     7→import * as React from "react";
+     8→import {
+     9→  ArrowRight,
+    10→  Check,
+    11→  Coffee,
+    12→  Leaf,
+    13→  Mail,
+    14→  MapPin,
+    15→  Phone,
+    16→  ShoppingCart,
+    17→  Star,
+    18→  Truck,
+    19→  ShieldCheck,
+    20→} from "lucide-react";
+    21→import { Button } from "@/components/ui/button";
+    22→import { Input } from "@/components/ui/input";
+    23→import { Textarea } from "@/components/ui/textarea";
+    24→import { Label } from "@/components/ui/label";
+    25→import {
+    26→  Accordion,
+    27→  AccordionContent,
+    28→  AccordionItem,
+    29→  AccordionTrigger,
+    30→} from "@/components/ui/accordion";
+    31→import { cn } from "@/lib/utils";
+    32→import { useToast } from "@/hooks/use-toast";
+    33→
+    34→interface DemoSiteProps {
+    35→  mode?: "live" | "static";
+    36→  className?: string;
+    37→}
+    38→
+    39→const FEATURES = [
+    40→  {
+    41→    icon: Leaf,
+    42→    title: "Single origin, always fresh",
+    43→    text: "Every batch is sourced from one farm and roasted within 48 hours of shipping, so the origin character survives all the way to your cup.",
+    44→  },
+    45→  {
+    46→    icon: Truck,
+    47→    title: "Free 2-day delivery",
+    48→    text: "Orders leave our roastery every Monday and Thursday. Free shipping on every subscription box, always, with no minimum order.",
+    49→  },
+    50→  {
+    51→    icon: ShieldCheck,
+    52→    title: "Roast-proof guarantee",
+    53→    text: "If a bag does not taste spectacular, tell us within 30 days and we replace it or refund you. No forms, no questions.",
+    54→  },
+    55→];
+    56→
+    57→const PRODUCTS = [
+    58→  {
+    59→    id: "sunrise",
+    60→    name: "Sunrise Blend",
+    61→    origin: "Huila, Colombia",
+    62→    notes: "Milk chocolate, red apple, caramel",
+    63→    price: 18,
+    64→    roast: "Medium",
+    65→    badge: "Bestseller",
+    66→    tone: "amber",
+    67→  },
+    68→  {
+    69→    id: "midnight",
+    70→    name: "Midnight Reserve",
+    71→    origin: "Yirgacheffe, Ethiopia",
+    72→    notes: "Blueberry, dark cocoa, jasmine",
+    73→    price: 24,
+    74→    roast: "Dark",
+    75→    badge: "Limited",
+    76→    tone: "stone",
+    77→  },
+    78→  {
+    79→    id: "meadow",
+    80→    name: "Meadow Light",
+    81→    origin: "Nyeri, Kenya",
+    82→    notes: "Blackcurrant, honey, citrus zest",
+    83→    price: 21,
+    84→    roast: "Light",
+    85→    badge: "New",
+    86→    tone: "emerald",
+    87→  },
+    88→];
+    89→
+    90→const PLANS = [
+    91→  {
+    92→    id: "explorer",
+    93→    name: "Explorer",
+    94→    price: 19,
+    95→    per: "/month",
+    96→    bags: "1 bag · 250g",
+    97→    perks: ["Choose your roast", "Skip or pause anytime", "Free shipping"],
+    98→    highlight: false,
+    99→  },
+   100→  {
+   101→    id: "regular",
+   102→    name: "Regular",
+   103→    price: 34,
+   104→    per: "/month",
+   105→    bags: "2 bags · 500g",
+   106→    perks: [
+   107→      "Mix any origins",
+   108→      "Early access to limited roasts",
+   109→      "Free shipping",
+   110→      "Tasting notes card",
+   111→    ],
+   112→    highlight: true,
+   113→  },
+   114→  {
+   115→    id: "obsessed",
+   116→    name: "Obsessed",
+   117→    price: 59,
+   118→    per: "/month",
+   119→    bags: "4 bags · 1kg",
+   120→    perks: [
+   121→      "Everything in Regular",
+   122→      "Rare micro-lot every quarter",
+   123→      "Brew gear discounts",
+   124→      "Priority support",
+   125→    ],
+   126→    highlight: false,
+   127→  },
+   128→];
+   129→
+   130→const REVIEWS = [
+   131→  {
+   132→    name: "Maya K.",
+   133→    quote:
+   134→      "The Midnight Reserve is the best coffee I have had at home, full stop. Tastes like a specialty cafe without leaving the kitchen.",
+   135→    stars: 5,
+   136→  },
+   137→  {
+   138→    name: "Daniel R.",
+   139→    quote:
+   140→      "Cancelled twice while travelling and restarted with one click. Support answered in five minutes. This is how subscriptions should work.",
+   141→    stars: 5,
+   142→  },
+   143→  {
+   144→    name: "Priya S.",
+   145→    quote:
+   146→      "The tasting notes are actually accurate, which is rare. My morning ritual has quietly upgraded itself.",
+   147→    stars: 4,
+   148→  },
+   149→];
+   150→
+   151→const FAQS = [
+   152→  {
+   153→    q: "When does my first box ship?",
+   154→    a: "We roast on Mondays and Thursdays. Orders placed before 8am ship the same roast day and arrive within 2 days. Your first box includes a welcome card with brew guides for each origin.",
+   155→  },
+   156→  {
+   157→    q: "Can I pause or skip a delivery?",
+   158→    a: "Yes. Skip, pause, or cancel from your account in two clicks. Changes made up to 24 hours before a roast day apply to that box automatically.",
+   159→  },
+   160→  {
+   161→    q: "How fresh is the coffee, really?",
+   162→    a: "Every bag is roasted to order, sealed with a one-way valve, and stamped with the roast date. Nothing sits in a warehouse. Typical age at your door: 2 to 4 days.",
+   163→  },
+   164→  {
+   165→    q: "Do you offer decaf?",
+   166→    a: "We offer a Swiss Water processed decaf from Colombia as a swap option in any plan at no extra cost. Select it during checkout or from your account.",
+   167→  },
+   168→  {
+   169→    q: "What if I do not like a bag?",
+   170→    a: "Tell us within 30 days and we replace the bag or refund the box. You keep the coffee. The only thing we ask is what went wrong, so the roasters can adjust.",
+   171→  },
+   172→];
+   173→
+   174→function scrollToSection(id: string) {
+   175→  const el = document.getElementById(`demo-${id}`);
+   176→  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+   177→}
+   178→
+   179→export function DemoSite({ mode = "live", className }: DemoSiteProps) {
+   180→  const { toast } = useToast();
+   181→  const [cart, setCart] = React.useState(0);
+   182→  const staticMode = mode === "static";
+   183→
+   184→  const notify = (title: string, description: string) => {
+   185→    if (staticMode) return;
+   186→    toast({ title, description, duration: 2600 });
+   187→  };
+   188→
+   189→  const addToCart = (name: string) => {
+   190→    if (staticMode) return;
+   191→    setCart((c) => c + 1);
+   192→    notify("Added to cart", `${name} is in your cart (${cart + 1} items).`);
+   193→  };
+   194→
+   195→  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+   196→    e.preventDefault();
+   197→    if (staticMode) return;
+   198→    const form = e.currentTarget;
+   199→    const data = new FormData(form);
+   200→    notify(
+   201→      "Message sent",
+   202→      `Thanks ${
+   203→        (data.get("name") as string) || "friend"
+   204→      }, we will reply within one business day.`
+   205→    );
+   206→    form.reset();
+   207→  };
+   208→
+   209→  return (
+   210→    <div
+   211→      id="tracked-site"
+   212→      data-track-root=""
+   213→      className={cn(
+   214→        "relative bg-[#faf6f0] font-sans text-[#2b1d12] selection:bg-[#f5d9a8]",
+   215→        staticMode ? "pointer-events-none select-none" : "",
+   216→        className
+   217→      )}
+   218→    >
+   219→      {/* Site header */}
+   220→      <header className="border-b border-[#e5d9c9] bg-[#faf6f0]/95 px-6 py-4 md:px-10">
+   221→        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
+   222→          <div className="flex items-center gap-2.5">
+   223→            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[#b4531f] to-[#7c3413] text-white shadow-sm">
+   224→              <Coffee className="h-5 w-5" aria-hidden />
+   225→            </span>
+   226→            <div className="leading-tight">
+   227→              <p className="text-lg font-extrabold tracking-tight">
+   228→                Aurora Beans
+   229→              </p>
+   230→              <p className="text-xs text-[#8a7561]">Specialty coffee club</p>
+   231→            </div>
+   232→          </div>
+   233→          <nav
+   234→            className="hidden items-center gap-1 md:flex"
+   235→            aria-label="Demo site navigation"
+   236→          >
+   237→            {[
+   238→              ["shop", "Shop"],
+   239→              ["pricing", "Subscriptions"],
+   240→              ["reviews", "Reviews"],
+   241→              ["faq", "FAQ"],
+   242→              ["contact", "Contact"],
+   243→            ].map(([id, label]) => (
+   244→              <button
+   245→                key={id}
+   246→                type="button"
+   247→                data-nav={id}
+   248→                onClick={() => scrollToSection(id)}
+   249→                className="rounded-lg px-3 py-2 text-sm font-medium text-[#5d4a37] transition hover:bg-[#f0e5d4] hover:text-[#2b1d12]"
+   250→              >
+   251→                {label}
+   252→              </button>
+   253→            ))}
+   254→          </nav>
+   255→          <div className="flex items-center gap-3">
+   256→            <span
+   257→              data-interactive
+   258→              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#e0d0bb] bg-white"
+   259→              aria-label="Cart"
+   260→            >
+   261→              <ShoppingCart className="h-4.5 w-4.5 text-[#6b543d]" />
+   262→              {cart > 0 && (
+   263→                <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#b4531f] px-1 text-[11px] font-bold text-white">
+   264→                  {cart}
+   265→                </span>
+   266→              )}
+   267→            </span>
+   268→            <Button
+   269→              data-nav="pricing"
+   270→              onClick={() => scrollToSection("pricing")}
+   271→              className="hidden bg-[#b4531f] font-semibold text-white shadow-sm hover:bg-[#9a4218] sm:inline-flex"
+   272→            >
+   273→              Start subscription
+   274→            </Button>
+   275→          </div>
+   276→        </div>
+   277→      </header>
+   278→
+   279→      {/* Hero */}
+   280→      <section
+   281→        id="demo-hero"
+   282→        data-section="hero"
+   283→        className="relative overflow-hidden px-6 py-20 md:px-10 md:py-28"
+   284→      >
+   285→        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#f3d9a7]/60 blur-3xl" />
+   286→        <div className="pointer-events-none absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-[#e8b477]/40 blur-3xl" />
+   287→        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
+   288→          <div>
+   289→            <span className="inline-flex items-center gap-2 rounded-full border border-[#e3c58f] bg-[#fdf1da] px-3.5 py-1.5 text-xs font-semibold text-[#8a5a1d]">
+   290→              <Star className="h-3.5 w-3.5 fill-[#e8a33d] text-[#e8a33d]" />
+   291→              4.9 average from 2,300+ members
+   292→            </span>
+   293→            <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-5xl xl:text-6xl">
+   294→              Ridiculously fresh coffee, roasted two days before it reaches
+   295→              your door.
+   296→            </h1>
+   297→            <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#6b543d]">
+   298→              Single-origin lots from farmers we actually visit, roasted to
+   299→              order in small batches, and shipped on a schedule you control.
+   300→              Pause anytime. Taste everything.
+   301→            </p>
+   302→            <div className="mt-8 flex flex-wrap items-center gap-3">
+   303→              <Button
+   304→                data-nav="pricing"
+   305→                onClick={() => scrollToSection("pricing")}
+   306→                className="h-12 bg-[#b4531f] px-7 text-base font-bold text-white shadow-lg shadow-[#b4531f]/25 hover:bg-[#9a4218]"
+   307→              >
+   308→                Start your subscription
+   309→                <ArrowRight className="ml-1 h-4 w-4" />
+   310→              </Button>
+   311→              <Button
+   312→                data-nav="shop"
+   313→                variant="outline"
+   314→                onClick={() => scrollToSection("shop")}
+   315→                className="h-12 border-[#d8c3a8] bg-white px-7 text-base font-semibold text-[#6b4a2a] hover:bg-[#faf0df]"
+   316→              >
+   317→                Browse this week's roasts
+   318→              </Button>
+   319→            </div>
+   320→            <dl className="mt-10 grid max-w-lg grid-cols-3 gap-4">
+   321→              {[
+   322→                ["48h", "Roast to ship"],
+   323→                ["12", "Origin partners"],
+   324→                ["97%", "Stay past box 3"],
+   325→              ].map(([v, l]) => (
+   326→                <div
+   327→                  key={l}
+   328→                  className="rounded-2xl border border-[#eadbc4] bg-white/70 p-4"
+   329→                >
+   330→                  <dt className="text-2xl font-extrabold text-[#9a4218]">
+   331→                    {v}
+   332→                  </dt>
+   333→                  <dd className="mt-0.5 text-xs font-medium text-[#8a7561]">
+   334→                    {l}
+   335→                  </dd>
+   336→                </div>
+   337→              ))}
+   338→            </dl>
+   339→          </div>
+   340→          <div className="relative hidden lg:block" aria-hidden>
+   341→            <div className="mx-auto grid h-[420px] w-[420px] rotate-3 place-items-center rounded-[2.5rem] bg-gradient-to-br from-[#c9702e] via-[#9a4218] to-[#5c2a0e] shadow-2xl shadow-[#7c3413]/30">
+   342→              <div className="grid h-[340px] w-[340px] -rotate-2 place-items-center rounded-[2rem] border-8 border-[#f5e6cd] bg-[#fdf8ee]">
+   343→                <div className="text-center">
+   344→                  <Coffee className="mx-auto h-16 w-16 text-[#b4531f]" />
+   345→                  <p className="mt-3 text-2xl font-extrabold tracking-tight">
+   346→                    AURORA BEANS
+   347→                  </p>
+   348→                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.3em] text-[#a08663]">
+   349→                    Fresh roast club
+   350→                  </p>
+   351→                </div>
+   352→              </div>
+   353→            </div>
+   354→          </div>
+   355→        </div>
+   356→      </section>
+   357→
+   358→      {/* Features */}
+   359→      <section
+   360→        id="demo-features"
+   361→        data-section="features"
+   362→        className="border-y border-[#eadbc4] bg-[#f5eee1] px-6 py-16 md:px-10"
+   363→      >
+   364→        <div className="mx-auto max-w-6xl">
+   365→          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+   366→            Why members stay
+   367→          </h2>
+   368→          <p className="mx-auto mt-3 max-w-2xl text-center text-[#6b543d]">
+   369→            We obsess over the boring details so your morning does not have to
+   370→            involve compromise.
+   371→          </p>
+   372→          <div className="mt-10 grid gap-6 md:grid-cols-3">
+   373→            {FEATURES.map((f) => (
+   374→              <article
+   375→                key={f.title}
+   376→                className="rounded-2xl border border-[#eadbc4] bg-white p-7 shadow-sm"
+   377→              >
+   378→                <span className="grid h-12 w-12 place-items-center rounded-xl bg-[#fdf1da] text-[#b4531f]">
+   379→                  <f.icon className="h-6 w-6" aria-hidden />
+   380→                </span>
+   381→                <h3 className="mt-4 text-lg font-bold">{f.title}</h3>
+   382→                <p className="mt-2 leading-relaxed text-[#6b543d]">{f.text}</p>
+   383→              </article>
+   384→            ))}
+   385→          </div>
+   386→        </div>
+   387→      </section>
+   388→
+   389→      {/* Shop */}
+   390→      <section
+   391→        id="demo-shop"
+   392→        data-section="shop"
+   393→        className="px-6 py-16 md:px-10"
+   394→      >
+   395→        <div className="mx-auto max-w-6xl">
+   396→          <div className="flex flex-wrap items-end justify-between gap-3">
+   397→            <div>
+   398→              <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+   399→                This week&apos;s roasts
+   400→              </h2>
+   401→              <p className="mt-2 text-[#6b543d]">
+   402→                Three origins, roasted Thursday. Limited stock per lot.
+   403→              </p>
+   404→            </div>
+   405→            <span className="rounded-full bg-[#f0e5d4] px-4 py-1.5 text-xs font-semibold text-[#6b543d]">
+   406→              Updated every roast day
+   407→            </span>
+   408→          </div>
+   409→          <div className="mt-10 grid gap-6 md:grid-cols-3">
+   410→            {PRODUCTS.map((p) => (
+   411→              <article
+   412→                key={p.id}
+   413→                className="group overflow-hidden rounded-2xl border border-[#eadbc4] bg-white shadow-sm transition hover:shadow-md"
+   414→              >
+   415→                <div
+   416→                  className={cn(
+   417→                    "relative grid h-44 place-items-center",
+   418→                    p.tone === "amber" &&
+   419→                      "bg-gradient-to-br from-[#f6d9a0] to-[#e9b268]",
+   420→                    p.tone === "stone" &&
+   421→                      "bg-gradient-to-br from-[#ded3c2] to-[#b5a48d]",
+   422→                    p.tone === "emerald" &&
+   423→                      "bg-gradient-to-br from-[#cfe6c3] to-[#93c07f]"
+   424→                  )}
+   425→                >
+   426→                  <Coffee
+   427→                    className="h-14 w-14 text-[#5c4029]/70 transition-transform group-hover:scale-110"
+   428→                    aria-hidden
+   429→                  />
+   430→                  <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#6b4a2a]">
+   431→                    {p.badge}
+   432→                  </span>
+   433→                </div>
+   434→                <div className="p-6">
+   435→                  <div className="flex items-baseline justify-between">
+   436→                    <h3 className="text-lg font-bold">{p.name}</h3>
+   437→                    <p className="text-lg font-extrabold text-[#9a4218]">
+   438→                      ${p.price}
+   439→                    </p>
+   440→                  </div>
+   441→                  <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-[#a08663]">
+   442→                    {p.origin} · {p.roast} roast
+   443→                  </p>
+   444→                  <p className="mt-3 text-sm leading-relaxed text-[#6b543d]">
+   445→                    {p.notes}
+   446→                  </p>
+   447→                  <Button
+   448→                    onClick={() => addToCart(p.name)}
+   449→                    className="mt-5 w-full bg-[#2b1d12] font-semibold text-white hover:bg-[#3d2a1a]"
+   450→                  >
+   451→                    <ShoppingCart className="mr-2 h-4 w-4" />
+   452→                    Add to cart
+   453→                  </Button>
+   454→                </div>
+   455→              </article>
+   456→            ))}
+   457→          </div>
+   458→        </div>
+   459→      </section>
+   460→
+   461→      {/* Pricing */}
+   462→      <section
+   463→        id="demo-pricing"
+   464→        data-section="pricing"
+   465→        className="border-y border-[#eadbc4] bg-[#f5eee1] px-6 py-16 md:px-10"
+   466→      >
+   467→        <div className="mx-auto max-w-6xl">
+   468→          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+   469→            Pick your rhythm
+   470→          </h2>
+   471→          <p className="mx-auto mt-3 max-w-2xl text-center text-[#6b543d]">
+   472→            Every plan ships free. Change, pause, or cancel whenever you like.
+   473→          </p>
+   474→          <div className="mt-10 grid gap-6 md:grid-cols-3">
+   475→            {PLANS.map((plan) => (
+   476→              <article
+   477→                key={plan.id}
+   478→                data-plan={plan.id}
+   479→                className={cn(
+   480→                  "relative rounded-2xl border p-7",
+   481→                  plan.highlight
+   482→                    ? "border-[#b4531f] bg-white shadow-xl shadow-[#b4531f]/10 md:-mt-4 md:mb-4"
+   483→                    : "border-[#eadbc4] bg-white shadow-sm"
+   484→                )}
+   485→              >
+   486→                {plan.highlight && (
+   487→                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#b4531f] px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow">
+   488→                    Most popular
+   489→                  </span>
+   490→                )}
+   491→                <h3 className="text-lg font-bold">{plan.name}</h3>
+   492→                <p className="mt-1 text-sm text-[#8a7561]">{plan.bags}</p>
+   493→                <p className="mt-4">
+   494→                  <span className="text-4xl font-extrabold tracking-tight">
+   495→                    ${plan.price}
+   496→                  </span>
+   497→                  <span className="text-sm font-medium text-[#8a7561]">
+   498→                    {plan.per}
+   499→                  </span>
+   500→                </p>
+   501→                <ul className="mt-5 space-y-2.5">
+   502→                  {plan.perks.map((perk) => (
+   503→                    <li
+   504→                      key={perk}
+   505→                      className="flex items-start gap-2 text-sm text-[#5d4a37]"
+   506→                    >
+   507→                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#7c9a54]" />
+   508→                      {perk}
+   509→                    </li>
+   510→                  ))}
+   511→                </ul>
+   512→                <Button
+   513→                  onClick={() =>
+   514→                    notify(
+   515→                      `${plan.name} selected`,
+   516→                      "Checkout is not part of this demo, but your click was recorded."
+   517→                    )
+   518→                  }
+   519→                  className={cn(
+   520→                    "mt-6 w-full font-semibold",
+   521→                    plan.highlight
+   522→                      ? "bg-[#b4531f] text-white hover:bg-[#9a4218]"
+   523→                      : "border-[#d8c3a8] bg-white text-[#6b4a2a] hover:bg-[#faf0df]"
+   524→                  )}
+   525→                  variant={plan.highlight ? "default" : "outline"}
+   526→                >
+   527→                  Choose {plan.name}
+   528→                </Button>
+   529→              </article>
+   530→            ))}
+   531→          </div>
+   532→        </div>
+   533→      </section>
+   534→
+   535→      {/* Reviews */}
+   536→      <section
+   537→        id="demo-reviews"
+   538→        data-section="reviews"
+   539→        className="px-6 py-16 md:px-10"
+   540→      >
+   541→        <div className="mx-auto max-w-6xl">
+   542→          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+   543→            Members, unfiltered
+   544→          </h2>
+   545→          <div className="mt-10 grid gap-6 md:grid-cols-3">
+   546→            {REVIEWS.map((r) => (
+   547→              <figure
+   548→                key={r.name}
+   549→                className="rounded-2xl border border-[#eadbc4] bg-white p-7 shadow-sm"
+   550→              >
+   551→                <div className="flex gap-1" aria-label={`${r.stars} of 5 stars`}>
+   552→                  {Array.from({ length: 5 }).map((_, i) => (
+   553→                    <Star
+   554→                      key={i}
+   555→                      className={cn(
+   556→                        "h-4 w-4",
+   557→                        i < r.stars
+   558→                          ? "fill-[#e8a33d] text-[#e8a33d]"
+   559→                          : "text-[#e0d0bb]"
+   560→                      )}
+   561→                    />
+   562→                  ))}
+   563→                </div>
+   564→                <blockquote className="mt-4 leading-relaxed text-[#5d4a37]">
+   565→                  &ldquo;{r.quote}&rdquo;
+   566→                </blockquote>
+   567→                <figcaption className="mt-4 text-sm font-bold">
+   568→                  {r.name}
+   569→                  <span className="ml-2 font-medium text-[#a08663]">
+   570→                    Member since 2023
+   571→                  </span>
+   572→                </figcaption>
+   573→              </figure>
+   574→            ))}
+   575→          </div>
+   576→        </div>
+   577→      </section>
+   578→
+   579→      {/* FAQ */}
+   580→      <section
+   581→        id="demo-faq"
+   582→        data-section="faq"
+   583→        className="border-y border-[#eadbc4] bg-[#f5eee1] px-6 py-16 md:px-10"
+   584→      >
+   585→        <div className="mx-auto max-w-3xl">
+   586→          <h2 className="text-center text-3xl font-extrabold tracking-tight md:text-4xl">
+   587→            Questions, answered
+   588→          </h2>
+   589→          <Accordion type="single" collapsible className="mt-8">
+   590→            {FAQS.map((f, i) => (
+   591→              <AccordionItem
+   592→                key={i}
+   593→                value={`faq-${i}`}
+   594→                className="border-[#eadbc4]"
+   595→              >
+   596→                <AccordionTrigger className="text-left text-base font-semibold text-[#2b1d12] hover:no-underline">
+   597→                  {f.q}
+   598→                </AccordionTrigger>
+   599→                <AccordionContent className="leading-relaxed text-[#6b543d]">
+   600→                  {f.a}
+   601→                </AccordionContent>
+   602→              </AccordionItem>
+   603→            ))}
+   604→          </Accordion>
+   605→        </div>
+   606→      </section>
+   607→
+   608→      {/* Contact */}
+   609→      <section
+   610→        id="demo-contact"
+   611→        data-section="contact"
+   612→        className="px-6 py-16 md:px-10"
+   613→      >
+   614→        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
+   615→          <div>
+   616→            <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+   617→              Talk to a human
+   618→            </h2>
+   619→            <p className="mt-3 max-w-md leading-relaxed text-[#6b543d]">
+   620→              Roasting questions, subscription changes, wholesale, or just
+   621→              coffee chat. We answer everything within one business day.
+   622→            </p>
+   623→            <ul className="mt-8 space-y-4">
+   624→              {[
+   625→                [MapPin, "Roastery", "14 Foundry Lane, Portland, OR"],
+   626→                [Mail, "Email", "hello@aurorabeans.demo"],
+   627→                [Phone, "Phone", "+1 (555) 014-9922"],
+   628→              ].map(([Icon, label, value]) => {
+   629→                const I = Icon as typeof MapPin;
+   630→                return (
+   631→                  <li key={label as string} className="flex items-center gap-4">
+   632→                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#fdf1da] text-[#b4531f]">
+   633→                      <I className="h-5 w-5" aria-hidden />
+   634→                    </span>
+   635→                    <div>
+   636→                      <p className="text-xs font-bold uppercase tracking-wide text-[#a08663]">
+   637→                        {label as string}
+   638→                      </p>
+   639→                      <p className="font-semibold">{value as string}</p>
+   640→                    </div>
+   641→                  </li>
+   642→                );
+   643→              })}
+   644→            </ul>
+   645→          </div>
+   646→          <form
+   647→            id="contact-form"
+   648→            onSubmit={onSubmit}
+   649→            className="rounded-2xl border border-[#eadbc4] bg-white p-7 shadow-sm"
+   650→            noValidate={false}
+   651→          >
+   652→            <div className="grid gap-5">
+   653→              <div className="grid gap-2">
+   654→                <Label htmlFor="contact-name">Your name</Label>
+   655→                <Input
+   656→                  id="contact-name"
+   657→                  name="name"
+   658→                  placeholder="Alex Rivera"
+   659→                  autoComplete="name"
+   660→                  required
+   661→                />
+   662→              </div>
+   663→              <div className="grid gap-2">
+   664→                <Label htmlFor="contact-email">Email</Label>
+   665→                <Input
+   666→                  id="contact-email"
+   667→                  name="email"
+   668→                  type="email"
+   669→                  placeholder="alex@example.com"
+   670→                  autoComplete="email"
+   671→                  required
+   672→                />
+   673→              </div>
+   674→              <div className="grid gap-2">
+   675→                <Label htmlFor="contact-message">Message</Label>
+   676→                <Textarea
+   677→                  id="contact-message"
+   678→                  name="message"
+   679→                  placeholder="How can we help?"
+   680→                  rows={4}
+   681→                />
+   682→              </div>
+   683→              <Button
+   684→                type="submit"
+   685→                className="bg-[#b4531f] font-bold text-white hover:bg-[#9a4218]"
+   686→              >
+   687→                Send message
+   688→              </Button>
+   689→              <p className="text-xs text-[#a08663]">
+   690→                This form is part of the demo. Submissions are simulated and
+   691→                tracked as form events only.
+   692→              </p>
+   693→            </div>
+   694→          </form>
+   695→        </div>
+   696→      </section>
+   697→
+   698→      {/* Footer */}
+   699→      <footer className="bg-[#2b1d12] px-6 py-12 text-[#cdb89f] md:px-10">
+   700→        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
+   701→          <div>
+   702→            <div className="flex items-center gap-2.5">
+   703→              <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#b4531f] text-white">
+   704→                <Coffee className="h-4 w-4" aria-hidden />
+   705→              </span>
+   706→              <p className="text-lg font-extrabold text-white">Aurora Beans</p>
+   707→            </div>
+   708→            <p className="mt-3 max-w-xs text-sm leading-relaxed">
+   709→              A fictional storefront built to demonstrate the PathPulse
+   710→              behaviour tracker. Every click here is being recorded.
+   711→            </p>
+   712→          </div>
+   713→          <div>
+   714→            <p className="text-sm font-bold uppercase tracking-wide text-white">
+   715→              Explore
+   716→            </p>
+   717→            <ul className="mt-3 space-y-2 text-sm">
+   718→              {[
+   719→                ["shop", "Shop"],
+   720→                ["pricing", "Subscriptions"],
+   721→                ["reviews", "Reviews"],
+   722→                ["faq", "FAQ"],
+   723→              ].map(([id, label]) => (
+   724→                <li key={id}>
+   725→                  <button
+   726→                    type="button"
+   727→                    data-nav={id}
+   728→                    onClick={() => scrollToSection(id)}
+   729→                    className="transition hover:text-white"
+   730→                  >
+   731→                    {label}
+   732→                  </button>
+   733→                </li>
+   734→              ))}
+   735→            </ul>
+   736→          </div>
+   737→          <div>
+   738→            <p className="text-sm font-bold uppercase tracking-wide text-white">
+   739→              Fine print
+   740→            </p>
+   741→            <p className="mt-3 text-sm leading-relaxed">
+   742→              No real orders are processed. No payment data is collected.
+   743→              Interaction events are anonymous and contain no personal
+   744→              information.
+   745→            </p>
+   746→          </div>
+   747→        </div>
+   748→      </footer>
+   749→    </div>
+   750→  );
+   751→}
+   752→

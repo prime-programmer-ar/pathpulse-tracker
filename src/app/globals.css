@@ -155,3 +155,37 @@
     opacity: 1;
   }
 }
+
+/* --- Lumina Voyages glassmorphism demo site --- */
+
+/* Night-sky starfield tile (used behind glass panels) */
+.pp-stars {
+  background-image:
+    radial-gradient(1.6px 1.6px at 22px 34px, rgba(255, 255, 255, 0.9) 50%, transparent 52%),
+    radial-gradient(1px 1px at 120px 86px, rgba(255, 255, 255, 0.55) 50%, transparent 52%),
+    radial-gradient(1.3px 1.3px at 74px 148px, rgba(255, 255, 255, 0.8) 50%, transparent 52%),
+    radial-gradient(1px 1px at 178px 190px, rgba(255, 255, 255, 0.45) 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 40px 200px, rgba(255, 255, 255, 0.6) 50%, transparent 52%);
+  background-size: 220px 220px;
+}
+
+/* Slow aurora drift for background blobs */
+@keyframes pp-aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4%, -3%, 0) scale(1.1);
+  }
+}
+.pp-aurora-blob {
+  animation: pp-aurora-drift 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pp-aurora-blob {
+    animation: none;
+  }
+}
