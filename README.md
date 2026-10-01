@@ -6,7 +6,7 @@
 
 A modern, self-hosted website behaviour analytics tool. It tracks how visitors interact with a site — clicks, cursor movement, scrolling, attention, frustration — and turns those signals into **live dashboards, heatmaps, scroll maps and full session replays**.
 
-This project is an upgraded, full-stack evolution of the single-file [website-behaviour-tracker](https://github.com/ahmedramzan-ai/website-behaviour-tracker) concept: same idea, dramatically deeper tracking, server-side persistence and a real analytics product UI.
+
 
 ---
 
